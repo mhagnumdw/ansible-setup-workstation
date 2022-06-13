@@ -1,0 +1,15 @@
+---
+- name: Preparing Workstation
+  hosts: all
+  tasks:
+    - name: Check if file myfile exists
+      stat:
+        path: /tmp/myfile.txt
+      register: myfile
+    - name: touch myfile
+      command: "touch /tmp/myfile.txt"
+      when: myfile.stat.exists == False
+    - name: update all packages - this is like running the 'dnf update' command
+      dnf:
+        name: "*"
+        state: latest
