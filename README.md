@@ -47,6 +47,8 @@ sudo dnf install ansible
 
 ### Configurar o virtualenv do Python
 
+// TODO: com o [asdf](https://github.com/asdf-vm/asdf) não daria pra gerenciar de modo mais simples? Se sim, colocar aqui uma seção com o `asdf`.
+
 ```bash
 pip install virtualenv
 ```
