@@ -116,7 +116,7 @@ molecule test --destroy=never
 
 # rodar apenas o teste em si e sem destruir o container (mais rápido)
 # (bom pra explorar algo dentro do container)
-molecule coverage
+molecule converge
 ```
 
 ## Ansible
@@ -143,3 +143,6 @@ Lista de módulos do Ansible
 - <https://www.youtube.com/watch?v=GfOj2wgxyF4>
 - <https://www.youtube.com/watch?v=bG2kX7W_s0c>
 - Playbook vs Roles: <https://stackoverflow.com/questions/32101001/ansible-playbooks-vs-roles#32101316>
+- <https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html>
+
+------------------------------------

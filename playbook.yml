@@ -2,14 +2,24 @@
 - name: Preparing Workstation
   hosts: all
   tasks:
+
     - name: Check if file myfile exists
       stat:
         path: /tmp/myfile.txt
       register: myfile
+
     - name: touch myfile
       command: "touch /tmp/myfile.txt"
       when: myfile.stat.exists == False
-    - name: update all packages - this is like running the 'dnf update' command
+
+    - name: update all packages (like dnf update command)
       dnf:
         name: "*"
+        state: latest
+
+    - name: install the latest version of Apache and MariaDB
+      dnf:
+        name:
+          - httpd
+          - mariadb-server
         state: latest
