@@ -144,5 +144,6 @@ Lista de módulos do Ansible
 - <https://www.youtube.com/watch?v=bG2kX7W_s0c>
 - Playbook vs Roles: <https://stackoverflow.com/questions/32101001/ansible-playbooks-vs-roles#32101316>
 - <https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html>
+- <https://stackoverflow.com/questions/45473463/pip-install-libvirt-python-fails-in-virtualenv#46366293>
 
 ------------------------------------
