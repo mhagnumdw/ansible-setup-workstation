@@ -18,6 +18,7 @@ _Automate setup of my workstation._
   - [Executar os testes](#executar-os-testes)
 - [Ansible](#ansible)
 - [Plugins do Ansible para o vscode](#plugins-do-ansible-para-o-vscode)
+- [Máquina Virtual qemu/kvm (libvirt)](#máquina-virtual-qemukvm-libvirt)
 - [Links](#links)
 
 ## Executar o playbook
@@ -43,6 +44,9 @@ Os testes do playbook do Ansible são feitos com o [Molecule](https://molecule.r
 
 ```bash
 sudo dnf install ansible
+
+# dependências extras (para usar vm do kvm)
+sudo dnf install libvirt-client
 ```
 
 ### Configurar o virtualenv do Python
@@ -98,7 +102,11 @@ deactivate
 ### Instalar o Molecule
 
 ```zsh
+# Para funcionar com docker:
 pip install "molecule[docker]" ansible-core
+
+# Para funcionar com o libvirt (máquina virtual):
+# pip install molecule ansible-core molecule-libvirt libvirt-python
 ```
 
 ### Executar os testes
@@ -135,6 +143,24 @@ Lista de módulos do Ansible
 
 - [Ansible, by RedHat](https://marketplace.visualstudio.com/items?itemName=redhat.ansible)
 - [VSCode snippets for Ansible](https://marketplace.visualstudio.com/items?itemName=MattiasBaake.vscode-snippets-for-ansible)
+
+## Máquina Virtual qemu/kvm (libvirt)
+
+```bash
+# listar as vms
+virsh list --all
+
+# listar as interfaces de rede
+virsh net-list --all
+
+# obter informações de rede de uma vm
+# no lugar de system pode ser session
+# também existe o parâmetro --source com os valores: arp, agent e arp
+virsh --connect qemu:///system domifaddr instance-name
+
+# visualizar o xml de configuração de uma vm
+virsh dumpxml instance-name
+```
 
 ## Links
 
