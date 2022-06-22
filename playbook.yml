@@ -3,6 +3,7 @@
   hosts: all
   tasks:
 
+    # https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
     - name: Check if file myfile exists
       stat:
         path: /tmp/myfile.txt
@@ -12,6 +13,7 @@
       command: "touch /tmp/myfile.txt"
       when: myfile.stat.exists == False
 
+    # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
     - name: update all packages (like dnf update command)
       dnf:
         name: "*"
