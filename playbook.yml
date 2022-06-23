@@ -15,11 +15,13 @@
 
     # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
     - name: update all packages (like dnf update command)
+      become: true
       dnf:
         name: "*"
         state: latest
 
     - name: install the latest version of Apache and MariaDB
+      become: true
       dnf:
         name:
           - httpd
