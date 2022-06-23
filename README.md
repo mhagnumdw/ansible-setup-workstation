@@ -19,6 +19,7 @@ _Automate setup of my workstation._
 - [Ansible](#ansible)
 - [Plugins do Ansible para o vscode](#plugins-do-ansible-para-o-vscode)
 - [Máquina Virtual qemu/kvm (libvirt)](#máquina-virtual-qemukvm-libvirt)
+  - [Conectar na Máquina Virtual criada](#conectar-na-máquina-virtual-criada)
 - [Links](#links)
 
 ## Executar o playbook
@@ -46,7 +47,8 @@ Os testes do playbook do Ansible são feitos com o [Molecule](https://molecule.r
 sudo dnf install ansible
 
 # dependências extras (para usar vm do kvm)
-sudo dnf install libvirt-client
+sudo dnf install libvirt-client guestfs-tools
+# guestfs-tools, traz o comando: virt-resize
 ```
 
 ### Configurar o virtualenv do Python
@@ -160,6 +162,21 @@ virsh --connect qemu:///system domifaddr instance-name
 
 # visualizar o xml de configuração de uma vm
 virsh dumpxml instance-name
+```
+
+### Conectar na Máquina Virtual criada
+
+É possível apenas por ssh, já que o password do usuário não foi definido.
+
+```bash
+# descobrir o IP
+virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd:
+
+# logar com a chave ssh que foi gerada na task "Generate OpenSSH key pair"
+ssh -i /home/mhagnumdw/.cache/molecule/ansible-setup-workstation/default/id_ssh_rsa molecule@10.10.10.230
+
+# se quiser definir a senha do usuário "molecule"
+sudo passwd molecule
 ```
 
 ## Links
