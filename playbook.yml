@@ -14,16 +14,23 @@
       when: myfile.stat.exists == False
 
     # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
-    - name: update all packages (like dnf update command)
-      become: true
-      dnf:
-        name: "*"
-        state: latest
+    # - name: update all packages (like dnf update command)
+    #   become: true
+    #   dnf:
+    #     name: "*"
+    #     state: latest
 
-    - name: install the latest version of Apache and MariaDB
+    # - name: install the latest version of Apache and MariaDB
+    #   become: true
+    #   dnf:
+    #     name:
+    #       - httpd
+    #       - mariadb-server
+    #     state: latest
+
+    - name: install the latest version of vim
       become: true
       dnf:
         name:
-          - httpd
-          - mariadb-server
+          - vim
         state: latest
