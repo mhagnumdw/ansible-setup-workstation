@@ -1,6 +1,13 @@
 ---
 dependency:
   name: galaxy
+  options:
+    # force=false evita o galaxy sempre buscar as dependências na internet, se a dependência não existir
+    # localmente é que el vai remoto - the problem with force: False is it will only install missing
+    # dependencies but won't update existing ones even if the version is different.
+    # https://github.com/ansible-community/molecule/issues/1641#issuecomment-455023382-permalink
+    # https://github.com/ansible-community/molecule/issues/1641#issuecomment-455109532-permalink
+    force: False # parece que não está surtindo efeito
 driver:
   name: libvirt
 platforms:
