@@ -7,7 +7,8 @@ platforms:
   - name: instance
     cpu: 2
     cpu_model: "qemu64"
-    image_url: "https://download.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/Fedora-Cloud-Base-34-1.2.x86_64.qcow2"
+    # image_url: "https://download.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/Fedora-Cloud-Base-34-1.2.x86_64.qcow2"
+    image_url: "file:///home/mhagnumdw/vm/Fedora-Cloud-Base-34-1.2.x86_64.qcow2"
     disk_size: "10G"
     ssh_port: 22
     memory_size: "1" # in GB
