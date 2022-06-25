@@ -20,6 +20,7 @@ _Automate setup of my workstation._
 - [Plugins do Ansible para o vscode](#plugins-do-ansible-para-o-vscode)
 - [Máquina Virtual qemu/kvm (libvirt)](#máquina-virtual-qemukvm-libvirt)
   - [Conectar na Máquina Virtual criada](#conectar-na-máquina-virtual-criada)
+- [Comandos variados](#comandos-variados)
 - [Links](#links)
 
 ## Executar o playbook
@@ -62,7 +63,7 @@ pip install virtualenv
 > 📝 Se aparecer o warnning
 >
 > ```log
-> WARNING: The script virtualenv is installed in '/home/mhagnumdw/.local/bin' which is not on PATH.
+> WARNING: The script virtualenv is installed in '$HOME/.local/bin' which is not on PATH.
 > Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
 > ```
 >
@@ -166,17 +167,49 @@ virsh dumpxml instance-name
 
 ### Conectar na Máquina Virtual criada
 
-É possível apenas por ssh, já que o password do usuário não foi definido.
+Basta abrir o console do virt manager e logar na vm com o usuário `molecule` e senha `123`.
+
+Via ssh com senha:
+
+```bash
+sshpass -p 123 \
+  ssh -o "StrictHostKeyChecking no" \
+  molecule@$( virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd: | awk '{ print $4 }' | sed 's/\/.*//' )
+```
+
+Via ssh com chave:
 
 ```bash
 # descobrir o IP
-virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd:
-
+VM_IP=$(virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd:)
 # logar com a chave ssh que foi gerada na task "Generate OpenSSH key pair"
-ssh -i /home/mhagnumdw/.cache/molecule/ansible-setup-workstation/default/id_ssh_rsa molecule@10.10.10.230
+ssh -i $HOME/.cache/molecule/ansible-setup-workstation/default/id_ssh_rsa molecule@$VM_IP
 
-# se quiser definir a senha do usuário "molecule"
+# ou em uma única linha
+ssh -i $HOME/.cache/molecule/ansible-setup-workstation/default/id_ssh_rsa \
+  molecule@$( virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd: | awk '{ print $4 }' | sed 's/\/.*//' )
+```
+
+## Comandos variados
+
+```bash
+# alterar a senha do usuário "molecule"
 sudo passwd molecule
+
+# conectar na vm com senha
+sshpass -p 123 \
+  ssh -o "StrictHostKeyChecking no" \
+  molecule@$( virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd: | awk '{ print $4 }' | sed 's/\/.*//' )
+
+# conectar na vm com chave ssh
+ssh -i $HOME/.cache/molecule/ansible-setup-workstation/default/id_ssh_rsa \
+  molecule@$( virsh --connect qemu:///system domifaddr instance | grep 52:54:00:ab:cd: | awk '{ print $4 }' | sed 's/\/.*//' )
+
+# destruir todo o ambiente
+molecule test --destroy=never 2>&1 | gnomon --medium=3 --high=5
+
+# destruir e rodar o teste (bom pra testar mudanças consecutivas)
+molecule destroy 2>&1 | gnomon ; reset ; clear ; molecule converge 2>&1 | gnomon --medium=3 --high=5
 ```
 
 ## Links
@@ -188,5 +221,3 @@ sudo passwd molecule
 - Playbook vs Roles: <https://stackoverflow.com/questions/32101001/ansible-playbooks-vs-roles#32101316>
 - <https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html>
 - <https://stackoverflow.com/questions/45473463/pip-install-libvirt-python-fails-in-virtualenv#46366293>
-
-------------------------------------
