@@ -1,5 +1,5 @@
 collections:
-  - name: community.docker
+  - name: community.docker # https://github.com/ansible-community/molecule/issues/2755#issuecomment-773916785-permalink
     version: ">=1.2.0,<2"
-  - name: community.general
+  - name: community.general # https://github.com/ansible-community/molecule/issues/2755#issuecomment-773916785-permalink
     version: ">=2,<3"
