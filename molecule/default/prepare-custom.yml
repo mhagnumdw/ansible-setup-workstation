@@ -27,6 +27,9 @@
         name: '@gnome-desktop'
         state: present
 
+    # // TODO: instalar para o resize da tela do gnome funcionar
+    # no QEMU/KVM: sudo dnf install -y spice-vdagent
+
     # // TODO: após instalar o gnome, precisei executar
     # dentro da maquina virtual:
     # sudo systemctl enable gdm.service
