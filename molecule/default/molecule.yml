@@ -25,5 +25,6 @@ provisioner:
     libvirt: # precisei adicionar playbooks.libvirt, pois foi a forma que encontrei de executar passos antes do create do libvirt
       create: create-custom.yml
       destroy: destroy.yml
+    prepare: prepare-custom.yml
 verifier:
   name: ansible
