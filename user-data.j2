@@ -1,11 +1,11 @@
-#
-# Esse arquivo deve ser copiado para ./.venv/lib/python3.10/site-packages/molecule_libvirt/playbooks/templates/user-data.j2
-# Abri um issue pra saber como sobrescrever esse arquivo: https://github.com/ansible-community/molecule-libvirt/issues/48
-#
-
 #cloud-config
 # Customize as per your need. At least change username ({{ molecule_ssh_user }})
 # key with your actual public key
+
+# OBS: BIZARRAMENTE, SE MOVER ESSE COMENTARIO PARA O INICIO DO ARQUIVO, DA PROBLEMA AO SE CONECTAR VIA SSH
+# Esse arquivo deve ser copiado para ./.venv/lib/python3.10/site-packages/molecule_libvirt/playbooks/templates/user-data.j2
+# Abri um issue pra saber como sobrescrever esse arquivo: https://github.com/ansible-community/molecule-libvirt/issues/48
+#
 
 # Hostname management
 preserve_hostname: False

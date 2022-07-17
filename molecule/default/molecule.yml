@@ -21,5 +21,9 @@ platforms:
     memory_size: "1" # in GB
 provisioner:
   name: ansible
+  playbooks:
+    libvirt: # precisei adicionar playbooks.libvirt, pois foi a forma que encontrei de executar passos antes do create do libvirt
+      create: create-custom.yml
+      destroy: destroy.yml
 verifier:
   name: ansible
