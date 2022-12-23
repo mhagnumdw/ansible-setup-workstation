@@ -35,7 +35,7 @@ ansible-playbook playbook.yml
 
 ## Testes automatizados
 
-Os testes do playbook do Ansible são feitos com o [Molecule](https://molecule.readthedocs.io/en/latest/). Primeira vamos configurar o ambiente e em seguida rodar os testes.
+Os testes do playbook do Ansible são feitos com o [Molecule](https://molecule.readthedocs.io/en/latest/). Primeiro vamos configurar o ambiente e em seguida rodar os testes.
 
 ### Versões que foram usadas
 
