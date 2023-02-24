@@ -146,6 +146,7 @@ Lista de módulos do Ansible
 
 - [Ansible, by RedHat](https://marketplace.visualstudio.com/items?itemName=redhat.ansible)
 - [VSCode snippets for Ansible](https://marketplace.visualstudio.com/items?itemName=MattiasBaake.vscode-snippets-for-ansible)
+- No terminal: `sudo dnf install python3-ansible-lint`
 
 ## Máquina Virtual qemu/kvm (libvirt)
 

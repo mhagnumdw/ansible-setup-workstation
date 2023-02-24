@@ -11,7 +11,7 @@
 
     - name: touch myfile
       command: "touch /tmp/myfile.txt"
-      when: myfile.stat.exists == False
+      when: not myfile.stat.exists
 
     # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
     # - name: update all packages (like dnf update command)
@@ -28,9 +28,9 @@
     #       - mariadb-server
     #     state: latest
 
-    - name: install the latest version of vim
+    - name: install vim
       become: true
       dnf:
         name:
           - vim
-        state: latest
+        state: present
