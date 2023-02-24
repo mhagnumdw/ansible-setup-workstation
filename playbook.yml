@@ -11,3 +11,10 @@
         name: '*'
         state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
         update_cache: yes
+
+    - name: Install python3-ansible-lint
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - python3-ansible-lint
+        state: present
