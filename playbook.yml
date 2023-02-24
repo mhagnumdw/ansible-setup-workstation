@@ -1,36 +1,13 @@
 ---
 - name: Preparing Workstation
-  hosts: all
+  hosts: localhost # // TODO: pra o teste com molecule precisava ser all
+  connection: local
   tasks:
 
-    # https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
-    - name: Check if file myfile exists
-      stat:
-        path: /tmp/myfile.txt
-      register: myfile
-
-    - name: touch myfile
-      command: "touch /tmp/myfile.txt"
-      when: not myfile.stat.exists
-
     # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
-    # - name: update all packages (like dnf update command)
-    #   become: true
-    #   dnf:
-    #     name: "*"
-    #     state: latest
-
-    # - name: install the latest version of Apache and MariaDB
-    #   become: true
-    #   dnf:
-    #     name:
-    #       - httpd
-    #       - mariadb-server
-    #     state: latest
-
-    - name: install vim
+    - name: Update all packages (like dnf update command)
       become: true
-      dnf:
-        name:
-          - vim
-        state: present
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest # noqa: package-latest (para o lint não reclamar e não deve mesmo nesse caso)
+        update_cache: yes
