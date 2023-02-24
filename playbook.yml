@@ -1,6 +1,6 @@
 ---
 - name: Preparing Workstation
-  hosts: localhost # // TODO: pra o teste com molecule precisava ser all
+  hosts: localhost # // TODO: para o teste com molecule precisava ser "all"
   connection: local
   tasks:
 
@@ -9,5 +9,5 @@
       become: true
       ansible.builtin.dnf:
         name: '*'
-        state: latest # noqa: package-latest (para o lint não reclamar e não deve mesmo nesse caso)
+        state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
         update_cache: yes
