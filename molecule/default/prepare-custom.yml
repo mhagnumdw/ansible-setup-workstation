@@ -1,0 +1,41 @@
+---
+
+- name: Prepara a maquina virtual para simular Fedora Workstation
+  hosts: all
+  gather_facts: false
+  tasks:
+
+    # https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
+    - name: Check if file myfile2 exists
+      stat:
+        path: /tmp/myfile2.txt
+      register: myfile2
+
+    - name: touch myfile2
+      command: "touch /tmp/myfile2.txt"
+      when: myfile2.stat.exists == False
+
+    - name: dnf list groups
+      become: true
+      shell: dnf grouplist -v
+      register: dnf_list_groups_output
+    - debug: var=dnf_list_groups_output.stdout
+
+    - name: Install the 'GNOME Desktop Environment' package group
+      become: true
+      dnf:
+        name: '@gnome-desktop'
+        state: present
+
+    # // TODO: instalar para o resize da tela do gnome funcionar
+    # no QEMU/KVM: sudo dnf install -y spice-vdagent
+
+    # // TODO: após instalar o gnome, precisei executar
+    # dentro da maquina virtual:
+    # sudo systemctl enable gdm.service
+    # sudo systemctl set-default graphical.target
+
+# // TODO: daquiiiiiii: uma opção é gerar uma imagem qcow2 do
+# Fedora Workstation, ao invés de preparar o Fedora Cloud durante
+# o teste.
+

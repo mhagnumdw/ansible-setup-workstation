@@ -1,0 +1,20 @@
+---
+
+- name: Prepara recursos para o teste com o Molecule
+  hosts: localhost # deve ser localhost, pois os passos são executados no workspace
+  gather_facts: false
+  tasks:
+    # - name: Find out playbooks path
+    #   shell: pwd
+    #   register: playbook_path_output
+    # - debug: var=playbook_path_output.stdout
+    # - name: "Ansible | List all known variables and facts"
+    #   debug:
+    #     var: hostvars[inventory_hostname]
+    - name: Copia user-data.j2 para user-data.j2 dentro do libvirt
+      copy:
+        src: "{{ playbook_dir }}/../../user-data.j2"
+        dest: "{{ playbook_dir }}/../../.venv/lib/python3.10/site-packages/molecule_libvirt/playbooks/templates/user-data.j2"
+        backup: yes
+
+- import_playbook: "{{ playbook_dir }}/../../.venv/lib/python3.10/site-packages/molecule_libvirt/playbooks/create.yml"

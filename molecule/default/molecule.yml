@@ -1,14 +1,30 @@
 ---
 dependency:
   name: galaxy
+  options:
+    # force=false evita o galaxy sempre buscar as dependências na internet, se a dependência não existir
+    # localmente é que el vai remoto - the problem with force: False is it will only install missing
+    # dependencies but won't update existing ones even if the version is different.
+    # https://github.com/ansible-community/molecule/issues/1641#issuecomment-455023382-permalink
+    # https://github.com/ansible-community/molecule/issues/1641#issuecomment-455109532-permalink
+    force: False # parece que não está surtindo efeito
 driver:
-  name: docker
+  name: libvirt
 platforms:
   - name: instance
-    image: fedora:36
-    # image: myfedora:latest
-    pre_build_image: true
+    cpu: 2
+    cpu_model: "qemu64"
+    # image_url: "https://download.fedoraproject.org/pub/fedora/linux/releases/34/Cloud/x86_64/images/Fedora-Cloud-Base-34-1.2.x86_64.qcow2"
+    image_url: "file:///home/mhagnumdw/vm/Fedora-Cloud-Base-34-1.2.x86_64.qcow2"
+    disk_size: "10G"
+    ssh_port: 22
+    memory_size: "1" # in GB
 provisioner:
   name: ansible
+  playbooks:
+    libvirt: # precisei adicionar playbooks.libvirt, pois foi a forma que encontrei de executar passos antes do create do libvirt
+      create: create-custom.yml
+      destroy: destroy.yml
+    prepare: prepare-custom.yml
 verifier:
   name: ansible

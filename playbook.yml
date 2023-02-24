@@ -3,6 +3,7 @@
   hosts: all
   tasks:
 
+    # https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
     - name: Check if file myfile exists
       stat:
         path: /tmp/myfile.txt
@@ -12,14 +13,24 @@
       command: "touch /tmp/myfile.txt"
       when: myfile.stat.exists == False
 
-    - name: update all packages (like dnf update command)
-      dnf:
-        name: "*"
-        state: latest
+    # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
+    # - name: update all packages (like dnf update command)
+    #   become: true
+    #   dnf:
+    #     name: "*"
+    #     state: latest
 
-    - name: install the latest version of Apache and MariaDB
+    # - name: install the latest version of Apache and MariaDB
+    #   become: true
+    #   dnf:
+    #     name:
+    #       - httpd
+    #       - mariadb-server
+    #     state: latest
+
+    - name: install the latest version of vim
+      become: true
       dnf:
         name:
-          - httpd
-          - mariadb-server
+          - vim
         state: latest

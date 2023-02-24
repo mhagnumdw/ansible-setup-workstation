@@ -1,0 +1,47 @@
+#cloud-config
+# Customize as per your need. At least change username ({{ molecule_ssh_user }})
+# key with your actual public key
+
+# OBS: BIZARRAMENTE, SE MOVER ESSE COMENTARIO PARA O INICIO DO ARQUIVO, DA PROBLEMA AO SE CONECTAR VIA SSH
+# Esse arquivo deve ser copiado para ./.venv/lib/python3.10/site-packages/molecule_libvirt/playbooks/templates/user-data.j2
+# Abri um issue pra saber como sobrescrever esse arquivo: https://github.com/ansible-community/molecule-libvirt/issues/48
+#
+
+# Hostname management
+preserve_hostname: False
+hostname: {{ item.name }}
+fqdn: {{ item.name }}.{{ molecule_dns_suffix }}
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true
+
+# Setup users with ssh keys so molecule can log in into new machine
+users:
+    - default
+    - name: "{{ molecule_ssh_user }}"
+      groups: ['wheel']
+      shell: /bin/bash
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      plain_text_passwd: 123
+      lock_passwd: false # (boolean) Disable password login. Default: true
+      ssh_pwauth: True
+      ssh-authorized-keys:
+        - {{ ssh_key.public_key }}
+
+# Definir a senha assim tambem da certo!
+# chpasswd:
+#   list: |
+#     {{ molecule_ssh_user }}:123
+#   expire: False
+
+# Configure where output will go
+output:
+  all: ">> /var/log/cloud-init.log"
+
+# set timezone for VM
+timezone: {{ item.timezone | default('America/Toronto') }}
+
+# Remove cloud-init
+runcmd:
+  - systemctl restart network
+  - dnf -y remove cloud-init || apt-get -y remove cloud-init
