@@ -31,6 +31,11 @@ sudo dnf install ansible
 
 # executar o playbook
 ansible-playbook playbook.yml
+
+# se precisar de root por conta do become=true
+ansible-playbook playbook.yml --ask-become-pass
+# ou
+ansible-playbook playbook.yml -e "ansible_become_password=${PASS}"
 ```
 
 ## Testes automatizados
