@@ -36,6 +36,8 @@ ansible-playbook playbook.yml
 ansible-playbook playbook.yml --ask-become-pass
 # ou
 ansible-playbook playbook.yml -e "ansible_become_password=${PASS}"
+# ou no modo verboso
+ansible-playbook -vvvvv playbook.yml --ask-become-pass
 ```
 
 ## Testes automatizados
