@@ -2,6 +2,7 @@
 - name: Preparing Workstation
   hosts: localhost # // TODO: para o teste com molecule precisava ser "all"
   connection: local
+  gather_facts: yes # default=yes
   tasks:
 
     # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
@@ -18,3 +19,65 @@
         name:
           - python3-ansible-lint
         state: present
+
+    ###########################################################################
+    #### Instalar o ZSH
+    ###########################################################################
+
+    - name: Install zsh and expect
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - zsh
+          - expect
+        state: present
+
+    - name: Change user shell to zsh
+      become: true
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        shell: /usr/bin/zsh
+
+    - name: Check if ~/.zshrc file exists
+      ansible.builtin.stat:
+        path: ~/.zshrc
+      register: zshrc_file
+
+    - name: Zsh config wizard
+      when: not zshrc_file.stat.exists
+      ansible.builtin.shell: |
+        set timeout 5
+        spawn zsh
+
+        expect "This is the Z Shell configuration function for new users"
+        send -- "1"
+
+        expect "(1)  Configure settings for history, i.e. command lines remembered"
+        send -- "1"
+
+        expect "# (1) Number of lines of history kept within the shell."
+        send -- "1"
+
+        expect "HISTSIZE> "
+        send -- \025
+        send -- "999999999\r"
+
+        expect "# (3) Number of lines of history to save to \$HISTFILE."
+        send -- "3"
+
+        expect "SAVEHIST> "
+        send -- \025
+        send -- "999999999\r"
+
+        expect "History configuration"
+        send -- "0"
+
+        expect "(0)  Exit, saving the new settings.  They will take effect immediately."
+        send -- "0"
+
+        expect "The function will not be run in future, but you can run"
+        send -- "exit\r"
+
+        expect eof
+      args:
+        executable: /usr/bin/expect
