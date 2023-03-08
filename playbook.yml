@@ -103,10 +103,37 @@
         user: asdf-vm
         repo: asdf
         action: latest_release
-      register: latest_release
+      register: asdf_latest_release
+
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "A última release do ASDF é: {{ asdf_latest_release }}"
 
     - name: Clonar o repositório do asdf-vm
       ansible.builtin.git:
         repo: https://github.com/asdf-vm/asdf.git
         dest: ~/.asdf
-        version: "{{ latest_release.tag }}"
+        version: "{{ asdf_latest_release.tag }}"
+
+    # - name: Adicionando linha no arquivo ~/.zshrc, se ainda não existir
+    #   ansible.builtin.lineinfile:
+    #     path: ~/.zshrc
+    #     line: '. "$HOME/.asdf/asdf.sh"'
+    #     state: present
+    #     backup: yes
+
+    - name: Adicionando linha no arquivo ~/.zshrc, se ainda não existir
+      ansible.builtin.blockinfile:
+        path: ~/.zshrc
+        backup: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        marker_begin: BEGIN_ASDF
+        marker_end: END_ASDF
+        # // TODO: conforme a documentação "ZSH & Git" em https://asdf-vm.com/guide/getting-started.html#_3-install-asdf
+        # as linhas do fpath e autoload podem ser substituídas pelo plugin zsdf do oh-my-zsh
+        block: |
+          . "$HOME/.asdf/asdf.sh"
+          # append completions to fpath
+          fpath=(${ASDF_DIR}/completions $fpath)
+          # initialise completions with ZSH's compinit
+          autoload -Uz compinit && compinit
