@@ -29,6 +29,9 @@ _Automate setup of my workstation._
 # instalar o ansible
 sudo dnf install ansible
 
+# instalar as dependências
+ansible-galaxy install -r requirements.yml
+
 # executar o playbook
 ansible-playbook playbook.yml
 

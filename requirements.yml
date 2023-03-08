@@ -1,0 +1,5 @@
+# https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-multiple-roles-from-a-file
+# https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles-and-collections-from-the-same-requirements-yml-file
+# ---
+# roles:
+#   - name: gantsign.oh-my-zsh
