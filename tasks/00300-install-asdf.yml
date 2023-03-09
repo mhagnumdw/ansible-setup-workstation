@@ -2,43 +2,36 @@
 #### Instalar o ASDF - https://asdf-vm.com/guide/getting-started.html
 ###########################################################################
 
-- name: Install python3-pip
+- name: Install python3-pip (ASDF)
   become: true
   ansible.builtin.dnf:
     name:
       - python3-pip
     state: present
 
-- name: Instalar github3.py com pip
+- name: Instalar github3.py com pip (ASDF)
   ansible.builtin.pip:
     name: github3.py
     state: present
 
-- name: Recuperar informações da última release do asdf
+- name: Recuperar informações da última release do ASDF
   community.general.github_release:
     user: asdf-vm
     repo: asdf
     action: latest_release
   register: asdf_latest_release
 
-- name: Debug
+- name: Debug (ASDF)
   ansible.builtin.debug:
     msg: "A última release do ASDF é: {{ asdf_latest_release }}"
 
-- name: Clonar o repositório do asdf-vm
+- name: Clonar o repositório do ASDF-VM
   ansible.builtin.git:
     repo: https://github.com/asdf-vm/asdf.git
     dest: ~/.asdf
     version: "{{ asdf_latest_release.tag }}"
 
-# - name: Adicionando linha no arquivo ~/.zshrc, se ainda não existir
-#   ansible.builtin.lineinfile:
-#     path: ~/.zshrc
-#     line: '. "$HOME/.asdf/asdf.sh"'
-#     state: present
-#     backup: yes
-
-- name: Adicionando linha no arquivo ~/.zshrc, se ainda não existir
+- name: Configura o ASDF no ~/.zshrc
   ansible.builtin.blockinfile:
     path: ~/.zshrc
     backup: yes
