@@ -5,12 +5,12 @@
   gather_facts: yes # default=yes
   tasks:
 
-    - name: Executar tasks
-      ansible.builtin.include_tasks: "{{ item }}"
-      loop:
-        - tasks/00100-basic-setup.yml
-        - tasks/00200-install-zsh.yml
-        - tasks/00300-install-asdf.yml
+    # - name: Executar tasks
+    #   ansible.builtin.include_tasks: "{{ item }}"
+    #   loop:
+    #     - tasks/00100-basic-setup.yml
+    #     - tasks/00200-install-zsh.yml
+    #     - tasks/00300-install-asdf.yml
 
     # # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_vars_facts.html
     # - name: Print all available facts
@@ -18,15 +18,23 @@
     #     var: ansible_facts['user_id']
     #     # msg: "Usuário: {{ ansible_user_id }}"
 
-  # Acho que não compensa usar a role gantsign.oh-my-zsh porque ela acaba
-  # fazendo modificações no sistema que eu acho indesejáveis. Algumas das
-  # modificações que ela faz: https://github.com/gantsign/ansible-role-oh-my-zsh/blob/46a3c82ee3b33c490438d75fe148abce73bd6805/tasks/install.yml
-  # roles:
-  #   - role: gantsign.oh-my-zsh
-  #     users:
-  #       - username: "{{ ansible_user_id }}"
-  #         oh_my_zsh:
-  #           plugins:
-  #             - git
-  #             - git-prompt
-  #           update_mode: reminder
+    - name: Baixar script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/ohmyzsh-install.sh
+
+    - name: Check if ~/.oh-my-zsh dir exists
+      ansible.builtin.stat:
+        path: ~/.oh-my-zsh
+      register: ohmyzsh_dir
+
+    - name: Executar script
+      when: not ohmyzsh_dir.stat.exists
+      ansible.builtin.shell: |
+        chmod +x /tmp/ohmyzsh-install.sh
+        /tmp/ohmyzsh-install.sh
+      register: output
+
+    - name: Imprimir output
+      ansible.builtin.debug:
+        var: output.stdout_lines
