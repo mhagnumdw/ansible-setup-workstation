@@ -5,36 +5,16 @@
   gather_facts: yes # default=yes
   tasks:
 
-    # - name: Executar tasks
-    #   ansible.builtin.include_tasks: "{{ item }}"
-    #   loop:
-    #     - tasks/00100-basic-setup.yml
-    #     - tasks/00200-install-zsh.yml
-    #     - tasks/00300-install-asdf.yml
+    - name: Executar tasks
+      ansible.builtin.include_tasks: "{{ item }}"
+      loop:
+        - tasks/00100-basic-setup.yml
+        - tasks/00200-install-zsh.yml
+        - tasks/00250-install-oh-my-zsh.yml
+        - tasks/00300-install-asdf.yml
 
     # # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_vars_facts.html
     # - name: Print all available facts
     #   ansible.builtin.debug:
     #     var: ansible_facts['user_id']
     #     # msg: "Usuário: {{ ansible_user_id }}"
-
-    - name: Baixar script
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-        dest: /tmp/ohmyzsh-install.sh
-
-    - name: Check if ~/.oh-my-zsh dir exists
-      ansible.builtin.stat:
-        path: ~/.oh-my-zsh
-      register: ohmyzsh_dir
-
-    - name: Executar script
-      when: not ohmyzsh_dir.stat.exists
-      ansible.builtin.shell: |
-        chmod +x /tmp/ohmyzsh-install.sh
-        /tmp/ohmyzsh-install.sh
-      register: output
-
-    - name: Imprimir output
-      ansible.builtin.debug:
-        var: output.stdout_lines
