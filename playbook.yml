@@ -3,6 +3,7 @@
   hosts: localhost # // TODO: para o teste com molecule precisava ser "all"
   connection: local
   gather_facts: yes # default=yes
+  diff: true
   tasks:
 
     - name: Executar tasks

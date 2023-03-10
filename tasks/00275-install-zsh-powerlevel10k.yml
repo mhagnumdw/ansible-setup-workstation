@@ -19,5 +19,92 @@
 - name: Clonar o repositório do powerlevel10k
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
+    version: master
     dest: "{{ powerlevel10k_dir.stdout }}"
     depth: 1
+
+- name: Altera o ~/.zshrc para usar o tema do powerlevel10k
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^ZSH_THEME='
+    line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
+    backup: yes
+
+- name: Criar pasta /usr/share/fonts/meslolgs com usuário root
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/fonts/meslolgs
+    state: directory
+    mode: 0755
+
+- name: Copiar fontes para /usr/share/fonts/meslolgs
+  become: true
+  ansible.builtin.get_url:
+    url: "https://github.com/romkatv/powerlevel10k-media/raw/master/{{ font_name | urlencode() }}"
+    dest: "/usr/share/fonts/meslolgs/{{ font_name }}"
+    mode: 0755
+  with_items:
+    - "MesloLGS NF Regular.ttf"
+    - "MesloLGS NF Bold.ttf"
+    - "MesloLGS NF Italic.ttf"
+    - "MesloLGS NF Bold Italic.ttf"
+  loop_control:
+    loop_var: font_name
+
+- name: Executar fc-cache -v para atualizar as fonts
+  ansible.builtin.command: fc-cache -v
+  become: true
+  changed_when: false
+
+# Install the recommended font. Optional but highly recommended.
+# Install Powerlevel10k itself.
+# Restart Zsh with exec zsh.
+# Type p10k configure if the configuration wizard doesn't start automatically.
+
+- name: Altera o ~/.zshrc para desativar o wizard do powerlevel10k
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD='
+    line: 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true'
+    backup: yes
+
+- name: Config wizard for powerlevel10k
+  # when: not zshrc_file.stat.exists # // TODO: checar se o arquivo ~/.p10k.zsh existe
+  changed_when: false # // TODO: mudar para o when
+  # // TODO: montar os passos com base no arquivo script.exp (daquiiiiiiiiiiiiiii)
+  ansible.builtin.shell: |
+    set timeout 5
+    spawn zsh
+
+    expect "This is the Z Shell configuration function for new users"
+    send -- "1"
+
+    expect "(1)  Configure settings for history, i.e. command lines remembered"
+    send -- "1"
+
+    expect "# (1) Number of lines of history kept within the shell."
+    send -- "1"
+
+    expect "HISTSIZE> "
+    send -- \025
+    send -- "999999999\r"
+
+    expect "# (3) Number of lines of history to save to \$HISTFILE."
+    send -- "3"
+
+    expect "SAVEHIST> "
+    send -- \025
+    send -- "999999999\r"
+
+    expect "History configuration"
+    send -- "0"
+
+    expect "(0)  Exit, saving the new settings.  They will take effect immediately."
+    send -- "0"
+
+    expect "The function will not be run in future, but you can run"
+    send -- "exit\r"
+
+    expect eof
+  args:
+    executable: /usr/bin/expect
