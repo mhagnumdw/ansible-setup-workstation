@@ -1,0 +1,23 @@
+###########################################################################
+#### Instalar o powerlevel10k - https://github.com/romkatv/powerlevel10k#oh-my-zsh
+###########################################################################
+
+- name: Obtendo o local para instalar o powerlevel10k
+  # É preciso do source ~/.zshrc para carregar a env ZSH_CUSTOM
+  ansible.builtin.shell: |
+    source ~/.zshrc
+    echo "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  args:
+    executable: /usr/bin/zsh
+  changed_when: false
+  register: powerlevel10k_dir
+
+- name: Local do powerlevel10k
+  ansible.builtin.debug:
+    var: powerlevel10k_dir.stdout
+
+- name: Clonar o repositório do powerlevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ powerlevel10k_dir.stdout }}"
+    depth: 1
