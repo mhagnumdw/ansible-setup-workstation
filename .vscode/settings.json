@@ -20,5 +20,8 @@
         "titleBar.inactiveForeground": "#e7e7e799",
         "commandCenter.border": "#e7e7e799"
     },
-    "peacock.color": "#167179"
+    "peacock.color": "#167179",
+    "files.associations": {
+        "**/tasks/*.yml": "ansible"
+    }
 }
