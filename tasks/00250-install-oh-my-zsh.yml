@@ -8,17 +8,18 @@
   register: ohmyzsh_dir
 
 - name: Instalar Oh-My-Zsh e configurar
-  when: not ohmyzsh_dir.stat.exists
+  # when: not ohmyzsh_dir.stat.exists # // TODO: remover esse when pois acho que não faz mais sentido, inclusive já testei sem ele
   block:
     - name: Baixar script do Oh-My-Zsh
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
         dest: /tmp/ohmyzsh-install.sh
+        mode: u=rwx,g=r,o=r
 
     - name: Executar script de instalação do Oh-My-Zsh
-      ansible.builtin.shell: |
-        chmod +x /tmp/ohmyzsh-install.sh
-        /tmp/ohmyzsh-install.sh --keep-zshrc
+      ansible.builtin.command:
+        cmd: /tmp/ohmyzsh-install.sh --keep-zshrc
+        creates: ~/.oh-my-zsh
       register: output
 
     - name: Imprimir output da instalação do Oh-My-Zsh
