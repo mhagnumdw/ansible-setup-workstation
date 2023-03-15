@@ -40,6 +40,19 @@
 
 ###########################################################################
 
+- name: Instalar fzf (plugin)
+  block:
+  - name: Adicionar fzf ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      # // TODO: o regex não está ok !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! daquiiiiiiiiiiiii
+      regexp: '^(plugins=\()((?!.*fzf).*)(\))$'
+      line: '\1\2 fzf\3'
+      backrefs: yes
+
+###########################################################################
+
 - name: Instalar fzf-tab
   block:
   - name: Clonar o repositório do fzf-tab
