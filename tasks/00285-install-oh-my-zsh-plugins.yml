@@ -20,6 +20,8 @@
   ansible.builtin.debug:
     var: oh_my_zsh_plugins_dir
 
+###########################################################################
+
 - name: Instalar zsh-autosuggestions
   block:
   - name: Clonar o repositório do zsh-autosuggestions
@@ -35,6 +37,26 @@
       regexp: '^(plugins=\()((?!.*zsh-autosuggestions).*)(\))$'
       line: '\1\2 zsh-autosuggestions\3'
       backrefs: yes
+
+###########################################################################
+
+- name: Instalar fzf-tab
+  block:
+  - name: Clonar o repositório do fzf-tab
+    ansible.builtin.git:
+      repo: https://github.com/Aloxaf/fzf-tab.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/fzf-tab"
+      version: master
+
+  - name: Adicionar fzf-tab ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*fzf-tab).*)(\))$'
+      line: '\1\2 fzf-tab\3'
+      backrefs: yes
+
+###########################################################################
 
 # OBSERVAÇÃO: a documentação diz que esse plugin deve ser o último: https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#user-content-with-a-plugin-manager
 - name: Instalar zsh-syntax-highlighting

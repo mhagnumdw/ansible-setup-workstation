@@ -10,9 +10,13 @@
     state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
     update_cache: yes
 
-- name: Install python3-ansible-lint
+- name: Install basic packages
   become: true
   ansible.builtin.dnf:
     name:
+      - fd-find
+      - fzf
       - python3-ansible-lint
+      - ripgrep
+      - the_silver_searcher
     state: present
