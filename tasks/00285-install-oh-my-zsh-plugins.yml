@@ -2,4 +2,36 @@
 #### Instalar plugins do Oh-My-Zsh - https://github.com/ohmyzsh/ohmyzsh
 ###########################################################################
 
-# // TODO; daquiiiiiiiiiiiiiii
+- name: Obtendo o local dos plugins do oh-my-zsh
+  # É preciso do source ~/.zshrc para carregar a env ZSH_CUSTOM
+  ansible.builtin.shell: |
+    source ~/.zshrc
+    echo "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+  args:
+    executable: /usr/bin/zsh
+  changed_when: false
+  register: output_oh_my_zsh_plugins_dir
+
+- name: Definir o fact oh_my_zsh_plugins_dir
+  ansible.builtin.set_fact:
+    oh_my_zsh_plugins_dir: "{{ output_oh_my_zsh_plugins_dir.stdout_lines[-1] }}"
+
+- name: Local dos plugins do oh-my-zsh
+  ansible.builtin.debug:
+    var: oh_my_zsh_plugins_dir
+
+- name: Instalar zsh-autosuggestions
+  block:
+  - name: Clonar o repositório do zsh-autosuggestions
+    ansible.builtin.git:
+      repo: https://github.com/zsh-users/zsh-autosuggestions.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/zsh-autosuggestions"
+      version: master
+
+  - name: Adicionar zsh-autosuggestions ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*zsh-autosuggestions).*)(\))$'
+      line: '\1\2 zsh-autosuggestions\3'
+      backrefs: yes
