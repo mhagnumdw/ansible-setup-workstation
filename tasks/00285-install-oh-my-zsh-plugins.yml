@@ -35,3 +35,20 @@
       regexp: '^(plugins=\()((?!.*zsh-autosuggestions).*)(\))$'
       line: '\1\2 zsh-autosuggestions\3'
       backrefs: yes
+
+# OBSERVAÇÃO: a documentação diz que esse plugin deve ser o último: https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#user-content-with-a-plugin-manager
+- name: Instalar zsh-syntax-highlighting
+  block:
+  - name: Clonar o repositório do zsh-syntax-highlighting
+    ansible.builtin.git:
+      repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/zsh-syntax-highlighting"
+      version: master
+
+  - name: Adicionar zsh-syntax-highlighting ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*zsh-syntax-highlighting).*)(\))$'
+      line: '\1\2 zsh-syntax-highlighting\3'
+      backrefs: yes
