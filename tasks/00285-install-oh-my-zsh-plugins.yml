@@ -52,6 +52,22 @@
 
 ###########################################################################
 
+# OBSERVAÇÃO: se o terminal utilizado faz uso das mesmas teclas de atalho do plugin,
+# então essas teclas de atalho precisam ser desativas no terminal - como exemplo o
+# Terminator faz uso dos mesmos atalhos.
+- name: Instalar dirhistory (plugin)
+  block:
+  - name: Adicionar dirhistory ao array de plugins no ~/.zshrc
+    # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/dirhistory
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*\bdirhistory[ \)]).*)(\))$'
+      line: '\1\2 dirhistory\3'
+      backrefs: yes
+
+###########################################################################
+
 - name: Instalar fzf-tab
   block:
   - name: Clonar o repositório do fzf-tab
