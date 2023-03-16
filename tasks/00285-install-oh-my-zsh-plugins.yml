@@ -34,7 +34,7 @@
     ansible.builtin.lineinfile:
       backup: yes
       path: ~/.zshrc
-      regexp: '^(plugins=\()((?!.*\bzsh-autosuggestions[ \)]).*)(\))$'
+      regexp: '^(plugins=\()((?!.*[\( ]zsh-autosuggestions[ \)]).*)(\))$'
       line: '\1\2 zsh-autosuggestions\3'
       backrefs: yes
 
@@ -46,7 +46,7 @@
     ansible.builtin.lineinfile:
       backup: yes
       path: ~/.zshrc
-      regexp: '^(plugins=\()((?!.*\bfzf[ \)]).*)(\))$'
+      regexp: '^(plugins=\()((?!.*[\( ]fzf[ \)]).*)(\))$'
       line: '\1\2 fzf\3'
       backrefs: yes
 
@@ -62,7 +62,7 @@
     ansible.builtin.lineinfile:
       backup: yes
       path: ~/.zshrc
-      regexp: '^(plugins=\()((?!.*\bdirhistory[ \)]).*)(\))$'
+      regexp: '^(plugins=\()((?!.*[\( ]dirhistory[ \)]).*)(\))$'
       line: '\1\2 dirhistory\3'
       backrefs: yes
 
@@ -80,7 +80,7 @@
     ansible.builtin.lineinfile:
       backup: yes
       path: ~/.zshrc
-      regexp: '^(plugins=\()((?!.*\bfzf-tab[ \)]).*)(\))$'
+      regexp: '^(plugins=\()((?!.*[\( ]fzf-tab[ \)]).*)(\))$'
       line: '\1\2 fzf-tab\3'
       backrefs: yes
 
@@ -99,6 +99,6 @@
     ansible.builtin.lineinfile:
       backup: yes
       path: ~/.zshrc
-      regexp: '^(plugins=\()((?!.*\bzsh-syntax-highlighting[ \)]).*)(\))$'
+      regexp: '^(plugins=\()((?!.*[\( ]zsh-syntax-highlighting[ \)]).*)(\))$'
       line: '\1\2 zsh-syntax-highlighting\3'
       backrefs: yes
