@@ -1,0 +1,26 @@
+###########################################################################
+#### Adicionar VPN da SEFIN
+###########################################################################
+
+# Comandos (com o usuário corrente que vai usar a máquina, não com o root)
+# Copiar SEFIN-DESV-VPN-config.ovpn para /tmp/ com acesso apenas pelo usuário
+# Renomear para SEFIN-DESV-VPN-BY-ANSIBLE.ovpn
+# f = /tmp/SEFIN-DESV-VPN-BY-ANSIBLE.ovpn
+# Pegar o name: name=`basename -s .ovpn $f`;
+# nmcli connection import type openvpn file $f
+# nmcli connection modify "${name}" ipv4.never-default yes
+# nmcli connection modify "${name}" ipv6.method disabled
+# nmcli connection modify "${name}" +vpn.data connection-type=password
+# nmcli connection modify "${name}" +vpn.data username="f0692311"
+# nmcli connection modify "${name}" +vpn.secrets password="oieee123333333333333333333333"
+
+# O playbook deve ser executado assim:
+# ansible-playbook playbook.yml --ask-vault-pass
+- name: Exemplo de task que usa a senha criptografada
+  ansible.builtin.command: echo "{{ minha_senha }}"
+  changed_when: false
+  register: output
+
+- name: Debug
+  ansible.builtin.debug:
+    var: output.stdout_lines
