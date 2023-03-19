@@ -2,20 +2,10 @@
 #### Adicionar VPN da SEFIN
 ###########################################################################
 
-# Comandos (com o usuário corrente que vai usar a máquina, não com o root)
-# Copiar SEFIN-DESV-VPN-config.ovpn para /tmp/ com acesso apenas pelo usuário
-# Renomear para SEFIN-DESV-VPN-BY-ANSIBLE.ovpn
-# f = /tmp/SEFIN-DESV-VPN-BY-ANSIBLE.ovpn
-# Pegar o name: name=`basename -s .ovpn $f`;
-# nmcli connection import type openvpn file $f
-# nmcli connection modify "${name}" ipv4.never-default yes
-# nmcli connection modify "${name}" ipv6.method disabled
-# nmcli connection modify "${name}" +vpn.data connection-type=password
-# nmcli connection modify "${name}" +vpn.data username="f0692311"
-# nmcli connection modify "${name}" +vpn.secrets password="oieee123333333333333333333333"
-
 # OBSERVAÇÃO: O playbook deve ser executado assim:
 # ansible-playbook playbook.yml --ask-vault-pass
+# ou
+# ansible-playbook playbook.yml --vault-pass-file=<(echo $ANSIBLE_VAULT_PASS)
 
 - name: Definir o nome da conexão
   ansible.builtin.set_fact:
@@ -54,7 +44,32 @@
 - name: Importar arquivo da VPN
   ansible.builtin.command: nmcli connection import type openvpn file {{ vpn_file_tmp }}
   register: connection_import_output
-  changed_when: connection_import_output.stdout | regex_search('Connection \'SEFIN-DESV-VPN-V2\' \([^\)]*?\) successfully added\.')
+  changed_when: connection_import_output.stdout | regex_search("Connection \'" + vpn_connection_name + "\' \(.*?\) successfully added\.")
   failed_when: "connection_import_output.rc != 0 or 'Warning: There is another connection with the name' in connection_import_output.stdout"
 
-# // TODO: daquiiiiiiiiiiii
+# - name: Obter informações sobre o arquivo
+#   ansible.builtin.stat:
+#     path: "/etc/NetworkManager/system-connections/{{ vpn_connection_name }}.nmconnection"
+#     checksum_algorithm: sha256
+#   register: nm_vpn_file_stat
+#   become: true # Devido a permissão do arquivo, é necessário para calcular o seu hash
+
+# - name: Obter o hash do arquivo antes da mudança
+#   ansible.builtin.set_fact:
+#     nm_vpn_file_hash_before: "{{ nm_vpn_file_stat.stat.checksum }}"
+
+- name: "Personalizando a conexão da VPN"
+  ansible.builtin.command:
+    cmd: "{{ nmcli_command }}"
+  with_items:
+    - nmcli connection modify {{ vpn_connection_name }} ipv4.never-default yes
+    - nmcli connection modify {{ vpn_connection_name }} ipv6.never-default yes
+    - nmcli connection modify {{ vpn_connection_name }} ipv6.method disabled
+    - nmcli connection modify {{ vpn_connection_name }} +vpn.data connection-type=password
+    - nmcli connection modify {{ vpn_connection_name }} +vpn.data username="f0692311"
+    # - nmcli connection modify "{{ vpn_connection_name }}" +vpn.secrets password="senha-aqui"
+  loop_control:
+    loop_var: nmcli_command
+  changed_when: false # // TODO: não consegui uma forma simples de definir a regra do changed_when, poderia ser se o arquivo `.nmconnection` mudou
+  # Like all templating, lookups execute and are evaluated on the Ansible control machine.
+  # changed_when: (lookup('file', '/etc/NetworkManager/system-connections/SEFIN-DESV-VPN-BY-ANSIBLE.nmconnection') | hash('sha256')) != nm_vpn_file_hash_before
