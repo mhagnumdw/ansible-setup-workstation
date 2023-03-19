@@ -14,13 +14,46 @@
 # nmcli connection modify "${name}" +vpn.data username="f0692311"
 # nmcli connection modify "${name}" +vpn.secrets password="oieee123333333333333333333333"
 
-# O playbook deve ser executado assim:
+# OBSERVAÇÃO: O playbook deve ser executado assim:
 # ansible-playbook playbook.yml --ask-vault-pass
-- name: Exemplo de task que usa a senha criptografada
-  ansible.builtin.command: echo "{{ minha_senha }}"
-  changed_when: false
-  register: output
 
-- name: Debug
-  ansible.builtin.debug:
-    var: output.stdout_lines
+- name: Definir o nome da conexão
+  ansible.builtin.set_fact:
+    vpn_connection_name: "SEFIN-DESV-VPN-BY-ANSIBLE"
+
+- name: Definir o nome do arquivo temporário da conexão
+  ansible.builtin.set_fact:
+    vpn_file_tmp: "/tmp/{{ vpn_connection_name }}.ovpn"
+
+- name: Copiar arquivo criptografado da VPN
+  ansible.builtin.copy:
+    content: "{{ sefin_vpn_file_content }}"
+    dest: "{{ vpn_file_tmp }}"
+    mode: u=rw,g=,o=
+
+- name: Verificar se a conexão existe
+  ansible.builtin.command: nmcli connection show {{ vpn_connection_name }}
+  register: connection_show_output
+  ignore_errors: yes
+  changed_when: false
+
+- name: Deletar a conexão caso exista
+  ansible.builtin.command: nmcli connection delete {{ vpn_connection_name }}
+  when: connection_show_output.rc == 0
+  register: connection_delete_output
+  changed_when: "connection_delete_output.rc == 0"
+
+- name: Permitir que o usuario modifique configuracoes de rede quando logado via ssh (PolKit) - usuario={{ ansible_user_id }}
+  become: yes
+  ansible.builtin.template:
+    src: templates/allow-ssh-networking.pkla.j2
+    dest: /etc/polkit-1/localauthority/50-local.d/allow-ssh-networking.pkla
+    mode: u=rw,g=r,o=r
+
+- name: Importar arquivo da VPN
+  ansible.builtin.command: nmcli connection import type openvpn file {{ vpn_file_tmp }}
+  register: connection_import_output
+  changed_when: connection_import_output.stdout | regex_search('Connection \'SEFIN-DESV-VPN-V2\' \([^\)]*?\) successfully added\.')
+  failed_when: "connection_import_output.rc != 0 or 'Warning: There is another connection with the name' in connection_import_output.stdout"
+
+# // TODO: daquiiiiiiiiiiii
