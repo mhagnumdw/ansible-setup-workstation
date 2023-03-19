@@ -43,6 +43,7 @@
   register: connection_delete_output
   changed_when: "connection_delete_output.rc == 0"
 
+# https://superuser.com/questions/219108/not-authorized-to-control-networking-in-ssh-console
 - name: Permitir que o usuario modifique configuracoes de rede quando logado via ssh (PolKit) - usuario={{ ansible_user_id }}
   become: yes
   ansible.builtin.template:
