@@ -58,6 +58,12 @@
 #   ansible.builtin.set_fact:
 #     nm_vpn_file_hash_before: "{{ nm_vpn_file_stat.stat.checksum }}"
 
+# // TODO: liberar permissão pra obter o arquivo e mais a frente:
+# daquiiiiiiiiiiiiiiiiiiiiiiii
+# remover permissão
+# descomentar changed_when com lookup
+# sudo chmod o=r /etc/NetworkManager/system-connections/SEFIN-DESV-VPN-config.nmconnection
+
 - name: "Personalizando a conexão da VPN"
   ansible.builtin.command:
     cmd: "{{ nmcli_command }}"
@@ -73,3 +79,5 @@
   changed_when: false # // TODO: não consegui uma forma simples de definir a regra do changed_when, poderia ser se o arquivo `.nmconnection` mudou
   # Like all templating, lookups execute and are evaluated on the Ansible control machine.
   # changed_when: (lookup('file', '/etc/NetworkManager/system-connections/SEFIN-DESV-VPN-BY-ANSIBLE.nmconnection') | hash('sha256')) != nm_vpn_file_hash_before
+
+# sudo chmod o=--- /etc/NetworkManager/system-connections/SEFIN-DESV-VPN-config.nmconnection
