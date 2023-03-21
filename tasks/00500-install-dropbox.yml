@@ -15,4 +15,7 @@
 # sudo rpm --import https://linux.dropbox.com/fedora/rpm-public-key.asc
 # sudo dnf install nautilus-dropbox
 # echo y | dropbox start --install
-#
+
+# sudo timeshift --list | grep -i -e NAME -e Dropbox
+# sudo timeshift --restore --snapshot "2023-03-20_21-52-24"
+# sudo timeshift --restore
