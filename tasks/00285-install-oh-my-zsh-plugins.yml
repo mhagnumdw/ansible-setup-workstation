@@ -68,6 +68,19 @@
 
 ###########################################################################
 
+- name: Instalar sudo (plugin)
+  block:
+  - name: Adicionar sudo ao array de plugins no ~/.zshrc
+    # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]sudo[ \)]).*)(\))$'
+      line: '\1\2 sudo\3'
+      backrefs: yes
+
+###########################################################################
+
 - name: Instalar fzf-tab
   block:
   - name: Clonar o repositório do fzf-tab
