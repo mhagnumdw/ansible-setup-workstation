@@ -1,0 +1,81 @@
+###########################################################################
+#### Adicionar VPN da SEFIN
+###########################################################################
+
+# OBSERVAÇÃO: O playbook deve ser executado assim:
+# ansible-playbook playbook.yml --ask-vault-pass
+# ou
+# ansible-playbook playbook.yml --vault-pass-file=<(echo $ANSIBLE_VAULT_PASS)
+
+- name: Definir o nome da conexão
+  ansible.builtin.set_fact:
+    vpn_connection_name: "SEFIN-DESV-VPN-BY-ANSIBLE"
+
+- name: Definir algumas constantes
+  ansible.builtin.set_fact:
+    # Arquivo para ser importado que contém a configuração de VPN da SEFIN
+    vpn_file_tmp: "/tmp/{{ vpn_connection_name }}.ovpn"
+    # Arquivo do NetworkManager que é criado quando a conexão é importada
+    nm_vpn_file: "/etc/NetworkManager/system-connections/{{ vpn_connection_name }}.nmconnection"
+
+- name: Copiar arquivo criptografado da VPN
+  ansible.builtin.copy:
+    content: "{{ sefin_vpn_file_content }}"
+    dest: "{{ vpn_file_tmp }}"
+    mode: u=rw,g=,o=
+
+- name: Verificar se a conexão existe
+  ansible.builtin.command: nmcli connection show {{ vpn_connection_name }}
+  register: connection_show_output
+  ignore_errors: yes
+  changed_when: false
+
+- name: Deletar a conexão caso exista
+  ansible.builtin.command: nmcli connection delete {{ vpn_connection_name }}
+  when: connection_show_output.rc == 0
+  register: connection_delete_output
+  changed_when: "connection_delete_output.rc == 0"
+
+# https://superuser.com/questions/219108/not-authorized-to-control-networking-in-ssh-console
+- name: Permitir que o usuario modifique configuracoes de rede quando logado via ssh (PolKit) - usuario={{ ansible_user_id }}
+  become: yes
+  ansible.builtin.template:
+    src: templates/allow-ssh-networking.pkla.j2
+    dest: /etc/polkit-1/localauthority/50-local.d/allow-ssh-networking.pkla
+    mode: u=rw,g=r,o=r
+
+- name: Importar conexão a partir do arquivo da VPN
+  ansible.builtin.command: nmcli connection import type openvpn file {{ vpn_file_tmp }}
+  register: connection_import_output
+  changed_when: connection_import_output.stdout | regex_search("Connection \'" + vpn_connection_name + "\' \(.*?\) successfully added\.")
+  failed_when: "connection_import_output.rc != 0 or 'Warning: There is another connection with the name' in connection_import_output.stdout"
+
+- name: Obter informações sobre o arquivo da VPN do NetworkManager
+  ansible.builtin.stat:
+    path: "{{ nm_vpn_file }}"
+    checksum_algorithm: sha256
+  register: nm_vpn_file_stat
+  become: true # Devido a permissão do arquivo, é necessário para calcular o seu hash
+
+- name: Obter o hash do arquivo da VPN do NetworkManager antes da mudança
+  ansible.builtin.set_fact:
+    nm_vpn_file_hash_before: "{{ nm_vpn_file_stat.stat.checksum }}"
+
+- name: "Personalizando a conexão da VPN"
+  # Se quiser setar o password: nmcli connection modify "{{ vpn_connection_name }}" +vpn.secrets password="senha-aqui"
+  ansible.builtin.shell: |
+    nmcli connection modify {{ vpn_connection_name }} ipv4.never-default yes
+    nmcli connection modify {{ vpn_connection_name }} ipv6.never-default yes
+    nmcli connection modify {{ vpn_connection_name }} ipv6.method disabled
+    nmcli connection modify {{ vpn_connection_name }} +vpn.data connection-type=password
+    nmcli connection modify {{ vpn_connection_name }} +vpn.data username="f0692311"
+    chown {{ ansible_user_id }} {{ nm_vpn_file }}
+  # Like all templating, lookups execute and are evaluated on the Ansible control machine.
+  changed_when: (lookup('file', nm_vpn_file, rstrip=False, lstrip=False) | hash('sha256')) != nm_vpn_file_hash_before
+  become: true # apenas por conta do chown e o chown é porque sem ele o lookup não consegue ler o arquivo
+
+- name: Volta permissão para o arquivo nmconnection
+  ansible.builtin.file:
+    path: /etc/NetworkManager/system-connections/SEFIN-DESV-VPN-BY-ANSIBLE.nmconnection
+    owner: "{{ nm_vpn_file_stat.stat.pw_name }}" # retorna para o dono original do arquivo
+  become: true

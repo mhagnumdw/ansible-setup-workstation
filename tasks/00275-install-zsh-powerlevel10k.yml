@@ -1,0 +1,181 @@
+###########################################################################
+#### Instalar o powerlevel10k - https://github.com/romkatv/powerlevel10k#oh-my-zsh
+###########################################################################
+
+- name: Obtendo o local para instalar o powerlevel10k
+  # É preciso do source ~/.zshrc para carregar a env ZSH_CUSTOM
+  ansible.builtin.shell: |
+    source ~/.zshrc
+    echo "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  args:
+    executable: /usr/bin/zsh
+  changed_when: false
+  register: powerlevel10k_dir
+
+- name: Local do powerlevel10k
+  ansible.builtin.debug:
+    var: powerlevel10k_dir.stdout
+
+- name: Clonar o repositório do powerlevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    version: master
+    dest: "{{ powerlevel10k_dir.stdout }}"
+    depth: 1
+
+- name: Criar pasta /usr/share/fonts/meslolgs com usuário root
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/fonts/meslolgs
+    state: directory
+    mode: 0755
+
+# https://docs.fedoraproject.org/en-US/quick-docs/fonts/#system-fonts
+- name: Copiar fontes para /usr/share/fonts/meslolgs
+  become: true
+  ansible.builtin.get_url:
+    url: "https://github.com/romkatv/powerlevel10k-media/raw/master/{{ font_name | urlencode() }}"
+    dest: "/usr/share/fonts/meslolgs/{{ font_name }}"
+    mode: 0755
+  with_items:
+    - "MesloLGS NF Regular.ttf"
+    - "MesloLGS NF Bold.ttf"
+    - "MesloLGS NF Italic.ttf"
+    - "MesloLGS NF Bold Italic.ttf"
+  loop_control:
+    loop_var: font_name
+
+- name: Executar fc-cache -v para atualizar as fonts
+  ansible.builtin.command: fc-cache -v
+  become: true
+  changed_when: false
+
+- name: Altera o ~/.zshrc para usar o tema do powerlevel10k
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^ZSH_THEME='
+    line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
+    backup: yes
+
+- name: Altera o ~/.zshrc para desativar o wizard do powerlevel10k
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD='
+    line: 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true'
+    backup: yes
+
+- name: Copia o arquivo de configuração do powerlevel10k
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/tasks/.p10k.zsh"
+    dest: "~/"
+    backup: yes
+    mode: u=rw,g=r,o=r
+
+- name: Configura o powerlevel10k no ~/.zshrc (instant prompt)
+  ansible.builtin.blockinfile:
+    path: ~/.zshrc
+    backup: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    marker_begin: BEGIN_powerlevel10k_instant_prompt
+    marker_end: END_powerlevel10k_instant_prompt
+    block: |
+      # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+      # Initialization code that may require console input (password prompts, [y/n]
+      # confirmations, etc.) must go above this block; everything else may go below.
+      if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+        source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+      fi
+    insertbefore: BOF
+
+- name: Ativa o powerlevel10k no ~/.zshrc
+  ansible.builtin.blockinfile:
+    path: ~/.zshrc
+    backup: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    marker_begin: BEGIN_powerlevel10k_enable
+    marker_end: END_powerlevel10k_enable
+    block: |
+      # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+      [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# PREFERI COPIAR O ARQUIVO .p10k.zsh, POIS OBSERVEI QUE O WIZARD PODE VARIAR
+# - name: Config wizard for powerlevel10k
+#   # when: not zshrc_file.stat.exists # // TODO: checar se o arquivo ~/.p10k.zsh existe
+#   ansible.builtin.shell: |
+#     set timeout 5
+#     spawn zsh
+
+#     send -- "p10k configure\r"
+
+#     expect -re "Does this look like a.*diamond.*rotated square"
+#     send -- "y"
+
+#     expect -re "Does this look like a .*lock"
+#     send -- "y"
+
+#     expect -re "Does this look like a.*Debian logo"
+#     send -- "y"
+
+#     expect -re "Do all these icons .*fit between the crosses"
+#     send -- "y"
+
+#     expect "Prompt Style"
+#     send -- "2"
+
+#     expect "Character Set"
+#     send -- "1"
+
+#     expect "Prompt Color"
+#     send -- "2"
+
+#     expect "Show current time"
+#     send -- "2"
+
+#     expect "Prompt Separators"
+#     send -- "1"
+
+#     expect "Prompt Heads"
+#     send -- "1"
+
+#     expect "Prompt Tails"
+#     send -- "1"
+
+#     expect "Prompt Height"
+#     send -- "2"
+
+#     expect "Prompt Connection"
+#     send -- "1"
+
+#     expect "Prompt Frame"
+#     send -- "2"
+
+#     expect "Prompt Spacing"
+#     send -- "2"
+
+#     expect "Icons"
+#     send -- "2"
+
+#     expect "Prompt Flow"
+#     send -- "1"
+
+#     expect "Enable Transient Prompt?"
+#     send -- "n"
+
+#     expect "Instant Prompt Mode"
+#     send -- "1"
+
+#     expect -re "Apply changes to .*zshrc"
+#     send -- "y"
+
+#     expect -re "New config: .*\.p10k.zsh"
+
+#     send -- "exit\r"
+
+#     expect eof
+#   args:
+#     executable: /usr/bin/expect
+#   register: output
+
+# - name: Imprimir output da configuração do powerlevel10k
+#   ansible.builtin.debug:
+#     var: output.stdout_lines

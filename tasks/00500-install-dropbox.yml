@@ -1,0 +1,83 @@
+###########################################################################
+#### Instalar Dropbox
+###########################################################################
+
+# cat <<EOF | sudo tee /etc/yum.repos.d/dropbox.repo
+# [Dropbox]
+# name=Dropbox Repository
+# baseurl=http://linux.dropbox.com/fedora/\$releasever/
+# gpgkey=https://linux.dropbox.com/fedora/rpm-public-key.asc
+# enabled=1
+# EOF
+
+- name: Adicionar repositório do Dropbox
+  ansible.builtin.yum_repository:
+    name: Dropbox
+    description: Dropbox Repository
+    baseurl: http://linux.dropbox.com/fedora/$releasever/
+    gpgkey: https://linux.dropbox.com/fedora/rpm-public-key.asc
+    enabled: yes
+    state: present
+  become: true
+
+# dnf config-manager --set-disabled Dropbox
+# sudo dnf config-manager --set-enabled Dropbox
+# sudo rpm --import https://linux.dropbox.com/fedora/rpm-public-key.asc
+# sudo dnf install nautilus-dropbox
+
+# - name: Install nautilus-dropbox
+#   ansible.builtin.dnf:
+#     name:
+#       - nautilus-dropbox
+#     state: present
+#     update_cache: yes
+#   become: true
+
+- name: Iniciar Dropbox
+  ansible.builtin.command: dropbox start
+  changed_when: false # // TODO: ver se tem como definir
+  register: dropbox_start_output
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     # var: dropbox_start_output.stdout_lines
+#     var: dropbox_start_output.stdout
+
+- name: The Dropbox daemon is not installed
+  # when: dropbox_start_output.stdout | search("The Dropbox daemon is not installed")
+  when: "'The Dropbox daemon is not installed' in dropbox_start_output.stdout"
+  block:
+
+    - name: Instalar o daemon do Dropbox
+      # ansible.builtin.command: echo y | dropbox start --install
+      ansible.builtin.shell: echo y | dropbox start --install
+      register: dropbox_install_output
+      changed_when: dropbox_install_output.stdout_lines[-1] == "Done!"
+      # changed_when: false
+
+    # - name: Debug
+    #   ansible.builtin.debug:
+    #     var: dropbox_install_output.stdout_lines
+
+- name: Checar status
+  ansible.builtin.command: dropbox status
+  changed_when: false
+  register: dropbox_status_output
+
+- name: Logar no Dropbox pois não está logado
+  when: "'To link this computer to a Dropbox account, visit the following url:' in dropbox_status_output.stdout"
+  block:
+
+    - name: Obter URL de login
+      ansible.builtin.set_fact:
+        url_login: "{{ dropbox_status_output.stdout_lines[-1] }}"
+
+    - name: Debug
+      ansible.builtin.debug:
+        var: url_login
+
+# ------------------
+
+# sudo timeshift --list | grep -i -e NAME -e Dropbox
+# sudo timeshift --restore --snapshot "2023-03-20_21-52-24"
+# sudo timeshift --restore

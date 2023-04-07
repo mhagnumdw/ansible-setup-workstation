@@ -1,36 +1,26 @@
 ---
 - name: Preparing Workstation
-  hosts: all
+  hosts: localhost # // TODO: para o teste com molecule precisava ser "all"
+  connection: local
+  gather_facts: yes # default=yes
+  diff: true
+  vars_files: vars.yml
   tasks:
 
-    # https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
-    - name: Check if file myfile exists
-      stat:
-        path: /tmp/myfile.txt
-      register: myfile
+    - name: Executar tasks
+      ansible.builtin.include_tasks: "{{ item }}"
+      loop:
+        # - tasks/00100-basic-setup.yml
+        # - tasks/00200-install-zsh.yml
+        # - tasks/00250-install-oh-my-zsh.yml
+        # - tasks/00275-install-zsh-powerlevel10k.yml
+        # - tasks/00285-install-oh-my-zsh-plugins.yml
+        # - tasks/00300-install-asdf.yml
+        # - tasks/00400-add-vpn-sefin.yml
+        - tasks/00500-install-dropbox.yml
 
-    - name: touch myfile
-      command: "touch /tmp/myfile.txt"
-      when: myfile.stat.exists == False
-
-    # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
-    # - name: update all packages (like dnf update command)
-    #   become: true
-    #   dnf:
-    #     name: "*"
-    #     state: latest
-
-    # - name: install the latest version of Apache and MariaDB
-    #   become: true
-    #   dnf:
-    #     name:
-    #       - httpd
-    #       - mariadb-server
-    #     state: latest
-
-    - name: install the latest version of vim
-      become: true
-      dnf:
-        name:
-          - vim
-        state: latest
+    # # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_vars_facts.html
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts['user_id']
+    #     # msg: "Usuário: {{ ansible_user_id }}"

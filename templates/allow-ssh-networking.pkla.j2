@@ -1,0 +1,4 @@
+[Permitir que o usuario {{ ansible_user_id }} modifique configuracoes de rede quando logado via ssh]
+Identity=unix-user:{{ ansible_user_id }}
+Action=org.freedesktop.NetworkManager.*
+ResultAny=yes

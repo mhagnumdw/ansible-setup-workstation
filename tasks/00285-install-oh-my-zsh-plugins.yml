@@ -1,0 +1,117 @@
+###########################################################################
+#### Instalar plugins do Oh-My-Zsh - https://github.com/ohmyzsh/ohmyzsh
+###########################################################################
+
+- name: Obtendo o local dos plugins do oh-my-zsh
+  # É preciso do source ~/.zshrc para carregar a env ZSH_CUSTOM
+  ansible.builtin.shell: |
+    source ~/.zshrc
+    echo "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+  args:
+    executable: /usr/bin/zsh
+  changed_when: false
+  register: output_oh_my_zsh_plugins_dir
+
+- name: Definir o fact oh_my_zsh_plugins_dir
+  ansible.builtin.set_fact:
+    oh_my_zsh_plugins_dir: "{{ output_oh_my_zsh_plugins_dir.stdout_lines[-1] }}"
+
+- name: Local dos plugins do oh-my-zsh
+  ansible.builtin.debug:
+    var: oh_my_zsh_plugins_dir
+
+###########################################################################
+
+- name: Instalar zsh-autosuggestions
+  block:
+  - name: Clonar o repositório do zsh-autosuggestions
+    ansible.builtin.git:
+      repo: https://github.com/zsh-users/zsh-autosuggestions.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/zsh-autosuggestions"
+      version: master
+
+  - name: Adicionar zsh-autosuggestions ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]zsh-autosuggestions[ \)]).*)(\))$'
+      line: '\1\2 zsh-autosuggestions\3'
+      backrefs: yes
+
+###########################################################################
+
+- name: Instalar fzf (plugin)
+  block:
+  - name: Adicionar fzf ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]fzf[ \)]).*)(\))$'
+      line: '\1\2 fzf\3'
+      backrefs: yes
+
+###########################################################################
+
+# OBSERVAÇÃO: se o terminal utilizado faz uso das mesmas teclas de atalho do plugin,
+# então essas teclas de atalho precisam ser desativas no terminal - como exemplo o
+# Terminator faz uso dos mesmos atalhos.
+- name: Instalar dirhistory (plugin)
+  block:
+  - name: Adicionar dirhistory ao array de plugins no ~/.zshrc
+    # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/dirhistory
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]dirhistory[ \)]).*)(\))$'
+      line: '\1\2 dirhistory\3'
+      backrefs: yes
+
+###########################################################################
+
+- name: Instalar sudo (plugin)
+  block:
+  - name: Adicionar sudo ao array de plugins no ~/.zshrc
+    # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]sudo[ \)]).*)(\))$'
+      line: '\1\2 sudo\3'
+      backrefs: yes
+
+###########################################################################
+
+- name: Instalar fzf-tab
+  block:
+  - name: Clonar o repositório do fzf-tab
+    ansible.builtin.git:
+      repo: https://github.com/Aloxaf/fzf-tab.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/fzf-tab"
+      version: master
+
+  - name: Adicionar fzf-tab ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]fzf-tab[ \)]).*)(\))$'
+      line: '\1\2 fzf-tab\3'
+      backrefs: yes
+
+###########################################################################
+
+# OBSERVAÇÃO: a documentação diz que esse plugin deve ser o último: https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#user-content-with-a-plugin-manager
+- name: Instalar zsh-syntax-highlighting
+  block:
+  - name: Clonar o repositório do zsh-syntax-highlighting
+    ansible.builtin.git:
+      repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+      dest: "{{ oh_my_zsh_plugins_dir }}/zsh-syntax-highlighting"
+      version: master
+
+  - name: Adicionar zsh-syntax-highlighting ao array de plugins no ~/.zshrc
+    ansible.builtin.lineinfile:
+      backup: yes
+      path: ~/.zshrc
+      regexp: '^(plugins=\()((?!.*[\( ]zsh-syntax-highlighting[ \)]).*)(\))$'
+      line: '\1\2 zsh-syntax-highlighting\3'
+      backrefs: yes

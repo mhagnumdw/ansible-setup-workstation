@@ -1,0 +1,40 @@
+###########################################################################
+#### Instalar o Oh-My-Zsh - https://github.com/ohmyzsh/ohmyzsh
+###########################################################################
+
+- name: Check if ~/.oh-my-zsh dir exists
+  ansible.builtin.stat:
+    path: ~/.oh-my-zsh
+  register: ohmyzsh_dir
+
+- name: Instalar Oh-My-Zsh e configurar
+  # when: not ohmyzsh_dir.stat.exists # // TODO: remover esse when pois acho que não faz mais sentido, inclusive já testei sem ele
+  block:
+    - name: Baixar script do Oh-My-Zsh
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/ohmyzsh-install.sh
+        mode: u=rwx,g=r,o=r
+
+    - name: Executar script de instalação do Oh-My-Zsh
+      ansible.builtin.command:
+        cmd: /tmp/ohmyzsh-install.sh --keep-zshrc
+        creates: ~/.oh-my-zsh
+      register: output
+
+    - name: Imprimir output da instalação do Oh-My-Zsh
+      ansible.builtin.debug:
+        var: output.stdout_lines
+
+    - name: Configura o Oh-My-Zsh no ~/.zshrc
+      ansible.builtin.blockinfile:
+        path: ~/.zshrc
+        backup: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        marker_begin: BEGIN_OH_MY_ZSH
+        marker_end: END_OH_MY_ZSH
+        block: |
+          export ZSH="$HOME/.oh-my-zsh"
+          ZSH_THEME="robbyrussell"
+          plugins=(git)
+          source $ZSH/oh-my-zsh.sh

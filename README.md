@@ -29,8 +29,18 @@ _Automate setup of my workstation._
 # instalar o ansible
 sudo dnf install ansible
 
+# instalar as dependências
+ansible-galaxy install -r requirements.yml
+
 # executar o playbook
 ansible-playbook playbook.yml
+
+# se precisar de root por conta do become=true
+ansible-playbook playbook.yml --ask-become-pass
+# ou
+ansible-playbook playbook.yml -e "ansible_become_password=${PASS}"
+# ou no modo verboso
+ansible-playbook -vvvvv playbook.yml --ask-become-pass
 ```
 
 ## Testes automatizados
@@ -146,6 +156,7 @@ Lista de módulos do Ansible
 
 - [Ansible, by RedHat](https://marketplace.visualstudio.com/items?itemName=redhat.ansible)
 - [VSCode snippets for Ansible](https://marketplace.visualstudio.com/items?itemName=MattiasBaake.vscode-snippets-for-ansible)
+- No terminal: `sudo dnf install python3-ansible-lint`
 
 ## Máquina Virtual qemu/kvm (libvirt)
 
