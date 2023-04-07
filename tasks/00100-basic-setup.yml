@@ -3,12 +3,12 @@
 ###########################################################################
 
 # https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
-- name: Update all packages (like dnf update command)
-  become: true
-  ansible.builtin.dnf:
-    name: '*'
-    state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
-    update_cache: yes
+# - name: Update all packages (like dnf update command)
+#   become: true
+#   ansible.builtin.dnf:
+#     name: '*'
+#     state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
+#     update_cache: yes
 
 - name: Install basic packages
   become: true
