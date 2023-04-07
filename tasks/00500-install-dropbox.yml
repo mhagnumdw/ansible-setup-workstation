@@ -2,14 +2,6 @@
 #### Instalar Dropbox
 ###########################################################################
 
-# cat <<EOF | sudo tee /etc/yum.repos.d/dropbox.repo
-# [Dropbox]
-# name=Dropbox Repository
-# baseurl=http://linux.dropbox.com/fedora/\$releasever/
-# gpgkey=https://linux.dropbox.com/fedora/rpm-public-key.asc
-# enabled=1
-# EOF
-
 - name: Adicionar repositório do Dropbox
   ansible.builtin.yum_repository:
     name: Dropbox
@@ -19,11 +11,6 @@
     enabled: yes
     state: present
   become: true
-
-# dnf config-manager --set-disabled Dropbox
-# sudo dnf config-manager --set-enabled Dropbox
-# sudo rpm --import https://linux.dropbox.com/fedora/rpm-public-key.asc
-# sudo dnf install nautilus-dropbox
 
 # - name: Install nautilus-dropbox
 #   ansible.builtin.dnf:
