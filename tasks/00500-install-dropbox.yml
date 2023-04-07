@@ -98,12 +98,14 @@
     #     state: present
     #   # become: yes
 
-    # - name: Instalar virtualenv (com dnf)
-    #   become: true
-    #   ansible.builtin.dnf:
-    #     name:
-    #       - python3-virtualenv
-    #     state: present
+    # // TODO: deixar aqui ou mover pra uma task que Instala
+    # coisas básicas de python?
+    - name: Instalar virtualenv (com dnf)
+      become: true
+      ansible.builtin.dnf:
+        name:
+          - python3-virtualenv
+        state: present
 
     - name: Criação do ambiente virtual
       # python -m venv .venv
@@ -118,6 +120,8 @@
         requirements: dropbox_login/requirements.txt
         virtualenv: dropbox_login/.venv
         chdir: "."
+
+    # // TODO: daquiiiiii: executar dropbox_login/dropbox_login.py
 
 # ------------------
 
