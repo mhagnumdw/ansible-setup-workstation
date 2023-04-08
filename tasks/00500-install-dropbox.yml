@@ -63,18 +63,24 @@
       ansible.builtin.debug:
         var: url_login
 
-    - name: Debug Dropbox password recebido por vars_prompt
-      ansible.builtin.debug:
-        var: dropbox_password
+    # - name: Debug Dropbox password recebido por vars_prompt
+    #   ansible.builtin.debug:
+    #     var: dropbox_password
+
+    - name: Pause to get some sensitive input
+      ansible.builtin.pause:
+        prompt: "Enter a secret"
+        echo: no
+      register: password_result
 
     # - name: "Prompt for Dropbox password"
     #   ansible.builtin.password:
     #     prompt: "Please enter your password"
     #   register: password_result
 
-    # - name: "Show Dropbox Password"
-    #   ansible.builtin.debug:
-    #     var: password_result
+    - name: "Show Dropbox Password"
+      ansible.builtin.debug:
+        var: password_result
 
 # ------------------
 
