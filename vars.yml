@@ -1,3 +1,9 @@
+# Nome de usuário para a maioria das contas
+# // TODO: coloquei esse vars_ pois como username é um nome
+# muito comum, pode sobrescrever alguma variável do ansible
+# ou do SO
+vars_username: dwouglas@gmail.com
+
 # Esse conteúdo foi gerado com o comando `ansible-vault encrypt --ask-vault-pass ~/SEFIN-DESV-VPN-config.ovpn`
 # Onde o arquivo de entrada é o arquivo de configuração da VPN,
 # o mesmo que é importado pelo Gnome para criar a VPN.

@@ -12,6 +12,11 @@
     state: present
   become: true
 
+# - name: Imprime nome do shell
+#   ansible.builtin.shell: |
+#     echo $0
+#   changed_when: false
+
 # - name: Install nautilus-dropbox
 #   ansible.builtin.dnf:
 #     name:
@@ -67,20 +72,56 @@
     #   ansible.builtin.debug:
     #     var: dropbox_password
 
-    - name: Pause to get some sensitive input
-      ansible.builtin.pause:
-        prompt: "Enter a secret"
-        echo: no
-      register: password_result
-
-    # - name: "Prompt for Dropbox password"
-    #   ansible.builtin.password:
-    #     prompt: "Please enter your password"
+    # - name: Informe a senha do Dropbox para o usuário {{ vars_username }}
+    #   ansible.builtin.pause:
+    #     prompt: "Senha"
+    #     echo: no
     #   register: password_result
 
-    - name: "Show Dropbox Password"
-      ansible.builtin.debug:
-        var: password_result
+    # # // TODO: remover
+    # - name: "Show Dropbox Password"
+    #   ansible.builtin.debug:
+    #     var: password_result
+
+    # // TODO: mudar para o basic setup
+    - name: Adicionar diretório ~/.local/bin à variável PATH
+      ansible.builtin.lineinfile:
+        backup: yes
+        path: ~/.zshrc
+        line: 'export PATH="$PATH:{{ ansible_user_dir }}/.local/bin"'
+        state: present
+        regexp: '^export PATH='
+
+    # - name: Instalar virtualenv e setuptools (com pip)
+    #   ansible.builtin.pip:
+    #     name:
+    #       - virtualenv
+    #       - setuptools
+    #     state: present
+    #   # become: yes
+
+    # - name: Instalar virtualenv (com dnf)
+    #   become: true
+    #   ansible.builtin.dnf:
+    #     name:
+    #       - python3-virtualenv
+    #     state: present
+
+    - name: Criação do ambiente virtual
+      # python -m venv .venv
+      ansible.builtin.shell: |
+        virtualenv .venv
+      changed_when: false # // TODO: melhorar?
+      args:
+        chdir: dropbox_login
+
+    - name: Instalação das dependências
+      ansible.builtin.pip:
+        requirements: requirements.txt
+        virtualenv: .venv
+        # virtualenv_python: python
+        # virtualenv_command: virtualenv .venv
+        chdir: dropbox_login
 
 # ------------------
 
