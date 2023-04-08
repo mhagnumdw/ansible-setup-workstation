@@ -63,6 +63,15 @@
       ansible.builtin.debug:
         var: url_login
 
+    - name: "Prompt for Dropbox password"
+      ansible.builtin.ansible_password:
+        prompt: "Please enter your password"
+      register: password_result
+
+    - name: "Show Dropbox Password"
+      ansible.builtin.debug:
+        var: password_result
+
 # ------------------
 
 # sudo timeshift --list | grep -i -e NAME -e Dropbox

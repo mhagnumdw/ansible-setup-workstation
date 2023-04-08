@@ -30,6 +30,7 @@ _Automate setup of my workstation._
 sudo dnf install ansible
 
 # instalar as dependências
+# (se for apenas executar o playbook, não é necessário)
 ansible-galaxy install -r requirements.yml
 
 # executar o playbook
@@ -38,9 +39,11 @@ ansible-playbook playbook.yml
 # se precisar de root por conta do become=true
 ansible-playbook playbook.yml --ask-become-pass
 # ou
-ansible-playbook playbook.yml -e "ansible_become_password=${PASS}"
+ansible-playbook playbook.yml -e "ansible_become_password=${ANSIBLE_BECOME_PASSWORD}"
 # ou no modo verboso
 ansible-playbook -vvvvv playbook.yml --ask-become-pass
+# ou
+ansible-playbook playbook.yml --vault-pass-file=<(echo $ANSIBLE_VAULT_PASS) -e "ansible_become_password=${ANSIBLE_BECOME_PASSWORD}"
 ```
 
 ## Testes automatizados
