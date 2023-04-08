@@ -59,18 +59,22 @@
       ansible.builtin.set_fact:
         url_login: "{{ dropbox_status_output.stdout_lines[-1] }}"
 
-    - name: Debug
+    - name: Debug URL Login
       ansible.builtin.debug:
         var: url_login
 
-    - name: "Prompt for Dropbox password"
-      ansible.builtin.ansible_password:
-        prompt: "Please enter your password"
-      register: password_result
-
-    - name: "Show Dropbox Password"
+    - name: Debug Dropbox password recebido por vars_prompt
       ansible.builtin.debug:
-        var: password_result
+        var: dropbox_password
+
+    # - name: "Prompt for Dropbox password"
+    #   ansible.builtin.password:
+    #     prompt: "Please enter your password"
+    #   register: password_result
+
+    # - name: "Show Dropbox Password"
+    #   ansible.builtin.debug:
+    #     var: password_result
 
 # ------------------
 

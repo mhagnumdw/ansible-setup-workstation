@@ -5,6 +5,11 @@
   gather_facts: yes # default=yes
   diff: true
   vars_files: vars.yml
+  vars_prompt:
+    - name: dropbox_password
+      prompt: "Qual é a senha da conta do Dropbox? (deixe vazio e enter se não vai precisar da senha)"
+      private: yes # The user input is hidden by default but it can be made visible by setting private: no
+      unsafe: yes # If you need to put in special characters (i.e {%) that might create templating errors, use the unsafe option
   tasks:
 
     - name: Executar tasks
