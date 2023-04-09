@@ -17,6 +17,7 @@
       loop:
         # - tasks/00100-basic-setup.yml
         # - tasks/00200-install-zsh.yml
+        # - tasks/00225-path.yml
         # - tasks/00250-install-oh-my-zsh.yml
         # - tasks/00275-install-zsh-powerlevel10k.yml
         # - tasks/00285-install-oh-my-zsh-plugins.yml

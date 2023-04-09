@@ -1,27 +1,6 @@
 ###########################################################################
-#### Setup básico
+#### Setup do PATH
 ###########################################################################
-
-# https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
-# - name: Update all packages (like dnf update command)
-#   become: true
-#   ansible.builtin.dnf:
-#     name: '*'
-#     state: latest # noqa: package-latest (https://ansible-lint.readthedocs.io/usage/#muting-warnings-to-avoid-false-positives)
-#     update_cache: yes
-
-- name: Install basic packages
-  become: true
-  ansible.builtin.dnf:
-    name:
-      - fd-find
-      - fzf
-      - python3-ansible-lint
-      - ripgrep
-      - the_silver_searcher
-      - google-chrome-stable
-      - python3-virtualenv
-    state: present
 
 # // TODO: Fiz essa pergunta ao chatgpt e parece que a resposta dele foi boa:
 # "Crie pra mim uma role que vai receber um path e vai atualizar a
