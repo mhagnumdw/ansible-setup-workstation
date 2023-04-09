@@ -122,6 +122,10 @@
         chdir: "."
 
     # // TODO: daquiiiiii: executar dropbox_login/dropbox_login.py
+    - name: Executa o script python para logar no dropbox
+      ansible.builtin.script: dropbox_login/dropbox_login.py
+      args:
+        executable: dropbox_login/.venv/bin/python3
 
 # ------------------
 

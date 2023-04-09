@@ -70,7 +70,7 @@ print(f"Total: {len(elements_button_submit)}")
 # // TODO: o Dropbox manda um email com um código, que é preciso digitar
 # na página. E aí ?! Talvez esse passo tenha que ser manual.
 
-print("Esperando 5 segundos")
-time.sleep(10)
+print("Esperando 60 segundos")
+time.sleep(60)
 
 # driver.quit()
