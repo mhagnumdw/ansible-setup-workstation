@@ -12,28 +12,23 @@
     state: present
   become: true
 
-# - name: Imprime nome do shell
-#   ansible.builtin.shell: |
-#     echo $0
-#   changed_when: false
-
-# - name: Install nautilus-dropbox
-#   ansible.builtin.dnf:
-#     name:
-#       - nautilus-dropbox
-#     state: present
-#     update_cache: yes
-#   become: true
+- name: Install nautilus-dropbox
+  ansible.builtin.dnf:
+    name:
+      - nautilus-dropbox
+    state: present
+    update_cache: yes
+  become: true
 
 - name: Iniciar Dropbox
   ansible.builtin.command: dropbox start
   changed_when: false # // TODO: ver se tem como definir
   register: dropbox_start_output
 
-# - name: Debug
-#   ansible.builtin.debug:
-#     # var: dropbox_start_output.stdout_lines
-#     var: dropbox_start_output.stdout
+- name: Debug - Inicialização do Dropbox
+  ansible.builtin.debug:
+    # var: dropbox_start_output.stdout_lines
+    var: dropbox_start_output.stdout
 
 - name: The Dropbox daemon is not installed
   # when: dropbox_start_output.stdout | search("The Dropbox daemon is not installed")
@@ -47,9 +42,9 @@
       changed_when: dropbox_install_output.stdout_lines[-1] == "Done!"
       # changed_when: false
 
-    # - name: Debug
-    #   ansible.builtin.debug:
-    #     var: dropbox_install_output.stdout_lines
+    - name: Debug - Instalação o daemon do Dropbox
+      ansible.builtin.debug:
+        var: dropbox_install_output.stdout_lines
 
 - name: Checar status
   ansible.builtin.command: dropbox status
@@ -83,7 +78,10 @@
     #   ansible.builtin.debug:
     #     var: password_result
 
-    # // TODO: mudar para o basic setup
+    # // TODO: mover para o basic setup ? Acho que sim!
+    # Fiz essa pergunta ao chatgpt e parece que a resposta dele foi boa:
+    # "Crie pra mim uma role que vai receber um path e vai atualizar a
+    # variável PATH definida no ~/.zshrc. Não deve permitir itens duplicados."
     - name: Adicionar diretório ~/.local/bin à variável PATH
       ansible.builtin.lineinfile:
         backup: yes
@@ -117,11 +115,9 @@
 
     - name: Instalação das dependências
       ansible.builtin.pip:
-        requirements: requirements.txt
-        virtualenv: .venv
-        # virtualenv_python: python
-        # virtualenv_command: virtualenv .venv
-        chdir: dropbox_login
+        requirements: dropbox_login/requirements.txt
+        virtualenv: dropbox_login/.venv
+        chdir: "."
 
 # ------------------
 
