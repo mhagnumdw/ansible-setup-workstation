@@ -47,6 +47,9 @@
   ansible.builtin.command: dropbox status
   changed_when: false
   register: dropbox_status_output
+  until: dropbox_status_output.stdout.strip() != "Connecting..."
+  retries: 5 # às vezes o "dropbox status" retorna apenas "Connecting..."
+  delay: 10
 
 - name: Debug - Checagem do status
   ansible.builtin.debug:
@@ -70,21 +73,14 @@
         echo: no
       register: password_result
 
-    # // TODO: remover
-    # - name: Instalar virtualenv e setuptools (com pip)
-    #   ansible.builtin.pip:
-    #     name:
-    #       - setuptools
-    #     state: present
-
-    - name: Criação do ambiente virtual
+    - name: Criação do ambiente virtual python
       ansible.builtin.shell: |
         virtualenv .venv
       changed_when: false # // TODO: melhorar?
       args:
         chdir: dropbox_login
 
-    - name: Instalação das dependências
+    - name: Instalação das dependências python
       ansible.builtin.pip:
         requirements: dropbox_login/requirements.txt
         virtualenv: dropbox_login/.venv
@@ -95,6 +91,19 @@
         cmd: dropbox_login/dropbox_login.py --url "{{ url_login }}" --username "{{ vars_username }}" --password "{{ password_result.user_input }}"
       args:
         executable: dropbox_login/.venv/bin/python3
+
+- name: Checar status
+  ansible.builtin.command: dropbox status
+  changed_when: false
+  register: dropbox_status_output
+
+- name: Debug - Checagem do status
+  ansible.builtin.debug:
+    var: dropbox_status_output.stdout
+
+- name: Ativa o Dropbox na inicialização quando o usuário fizer login
+  ansible.builtin.command: dropbox autostart y
+  changed_when: false
 
 # TODO: daquiiiii: após o login o dropbox já vai começar a sincronizar todo o drive em algum lugar do disco
 

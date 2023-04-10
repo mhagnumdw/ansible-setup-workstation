@@ -2,14 +2,15 @@ import time
 import argparse
 
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Para executar:
@@ -30,6 +31,10 @@ args = parser.parse_args()
 
 service = ChromeService(executable_path=ChromeDriverManager().install())
 
+# chrome_options = webdriver.ChromeOptions()
+# chrome_options.add_argument('--accept-all-cookies')
+
+# driver = webdriver.Chrome(service=service, options=chrome_options)
 driver = webdriver.Chrome(service=service)
 
 wait = WebDriverWait(driver, 20)
@@ -39,7 +44,15 @@ driver.get(args.url)
 
 print("Esperando os elementos aparecem na tela")
 wait.until(EC.presence_of_element_located((By.NAME, "login_email")))
+
 time.sleep(5)
+
+# try:
+#     accept_all_cookies_button = driver.find_element(By.ID,'accept_all_cookies_button')
+#     if accept_all_cookies_button.is_displayed():
+#         accept_all_cookies_button.click()
+# except NoSuchElementException:
+#     pass
 
 print("Obtendo os inputs de username")
 elements_username = driver.find_elements(By.NAME, 'login_email')
