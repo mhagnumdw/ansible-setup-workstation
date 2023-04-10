@@ -1,0 +1,80 @@
+###########################################################################
+#### Instalar Dropbox
+###########################################################################
+
+- name: Adicionar repositório do Dropbox
+  ansible.builtin.yum_repository:
+    name: Dropbox
+    description: Dropbox Repository
+    baseurl: http://linux.dropbox.com/fedora/$releasever/
+    gpgkey: https://linux.dropbox.com/fedora/rpm-public-key.asc
+    enabled: yes
+    state: present
+  become: true
+
+- name: Install nautilus-dropbox
+  ansible.builtin.dnf:
+    name:
+      - nautilus-dropbox
+    state: present
+  become: true
+
+- name: Iniciar Dropbox
+  ansible.builtin.command: dropbox start
+  changed_when: false # // TODO: ver se tem como definir
+  register: dropbox_start_output
+
+- name: Debug - Inicialização do Dropbox
+  ansible.builtin.debug:
+    var: dropbox_start_output.stdout
+
+- name: The Dropbox daemon is not installed
+  when: "'The Dropbox daemon is not installed' in dropbox_start_output.stdout"
+  block:
+
+    - name: Instalar o daemon do Dropbox
+      ansible.builtin.shell: echo y | dropbox start --install
+      register: dropbox_install_output
+      changed_when: dropbox_install_output.stdout_lines[-1] == "Done!"
+
+    - name: Debug - Instalação o daemon do Dropbox
+      ansible.builtin.debug:
+        var: dropbox_install_output.stdout_lines
+
+- name: Checar status
+  ansible.builtin.command: dropbox status
+  changed_when: false
+  register: dropbox_status_output
+  until: dropbox_status_output.stdout.strip() != "Connecting..."
+  retries: 5 # às vezes o "dropbox status" retorna apenas "Connecting..."
+  delay: 10
+
+- name: Debug - Checagem do status
+  ansible.builtin.debug:
+    var: dropbox_status_output.stdout
+
+- name: Logar no Dropbox pois não está logado
+  when: "'To link this computer to a Dropbox account, visit the following url:' in dropbox_status_output.stdout"
+  block:
+
+    - name: Obter URL de Login do Dropbox
+      ansible.builtin.set_fact:
+        url_login: "{{ dropbox_status_output.stdout_lines[-1] }}"
+
+    - name: Accesse a URL abaixo e faça login no dropbox
+      ansible.builtin.debug:
+        var: url_login
+
+    - name: Accesse a URL acima e faça login no dropbox (se já estiver logado, clique em Connect)
+      ansible.builtin.pause:
+        prompt: "Pressione ENTER quando tiver concluído"
+        echo: no
+
+- name: Checar status (falha se não tiver conectado ao Dropbox)
+  ansible.builtin.command: dropbox status
+  changed_when: false
+  register: dropbox_status_output
+  until: dropbox_status_output.stdout.strip() != "Connecting..."
+  retries: 5 # às vezes o "dropbox status" retorna apenas "Connecting..."
+  delay: 10
+  failed_when: dropbox_status_output.stdout is search("To link this computer to a Dropbox account, visit the following url:")

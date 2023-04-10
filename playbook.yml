@@ -23,7 +23,7 @@
         # - tasks/00285-install-oh-my-zsh-plugins.yml
         # - tasks/00300-install-asdf.yml
         # - tasks/00400-add-vpn-sefin.yml
-        - tasks/00500-install-dropbox.yml
+        - tasks/00500-install-dropbox-v2.yml
 
     # # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_vars_facts.html
     # - name: Print all available facts
