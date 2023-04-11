@@ -78,3 +78,17 @@
   retries: 5 # às vezes o "dropbox status" retorna apenas "Connecting..."
   delay: 10
   failed_when: dropbox_status_output.stdout is search("To link this computer to a Dropbox account, visit the following url:")
+
+- name: Exclui itens da sincronização (sincronização seletiva)
+  ansible.builtin.command: dropbox exclude add "{{ path_to_exclude_from_sync }}"
+  changed_when: false
+  with_items:
+    - "{{ ansible_user_dir }}/Dropbox/Aplicativos"
+    - "{{ ansible_user_dir }}/Dropbox/Filmes"
+    - "{{ ansible_user_dir }}/Dropbox/Jornada"
+  loop_control:
+    loop_var: path_to_exclude_from_sync
+
+- name: Ativa o Dropbox na inicialização quando o usuário fizer login no SO
+  ansible.builtin.command: dropbox autostart y
+  changed_when: false
