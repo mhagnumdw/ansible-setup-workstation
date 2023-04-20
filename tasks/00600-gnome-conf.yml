@@ -1,0 +1,124 @@
+###########################################################################
+#### Configurar o Gnome
+###########################################################################
+
+# DAQUIIIIIIIIIIIIII: abaixo tentando configurar o atalho Win+E para abrir o Nautilus
+
+# - name: install requirements
+#   become: true
+#   ansible.builtin.package:
+#     name:
+#       - python3-psutil
+#       - dconf
+#       - dbus-tools
+#       - dbus-daemon
+
+####################################################
+
+# - name: Configurar atalho Win+E
+#   community.general.gconftool2:
+#     key: "/apps/metacity/global_keybindings/run_command_1"
+#     value: "<Super>e"
+#     value_type: "string"
+#     state: present
+#   register: result
+#   changed_when: result.changed
+
+# - name: Configurar comando para o atalho Win+E
+#   community.general.gconftool2:
+#     key: "/apps/metacity/keybinding_commands/command_1"
+#     value: "nautilus"
+#     value_type: "string"
+#     state: present
+#   register: result
+#   changed_when: result.changed
+
+####################################################
+
+# - name: Create custom keybinding
+#   community.general.gconftool2:
+#     key: /apps/metacity/keybindings/custom{{ custom_key_number }}/command
+#     value: nautilus
+#     value_type: string
+#     state: present
+#   register: result_create_keybinding
+#   vars:
+#     custom_key_number: 0
+
+# - name: Set name for custom keybinding
+#   community.general.gconftool2:
+#     key: /apps/metacity/keybindings/custom{{ custom_key_number }}/name
+#     value: Abrir Nautilus
+#     value_type: string
+#     state: present
+#   register: result_set_name
+#   vars:
+#     custom_key_number: 0
+
+# - name: Set keybinding for custom keybinding
+#   community.general.gconftool2:
+#     key: /apps/metacity/global_keybindings/run_command_{{ custom_key_number }}
+#     value: <Super>e
+#     value_type: string
+#     state: present
+#   register: result_set_keybinding
+#   vars:
+#     custom_key_number: 0
+
+####################################################
+
+# - name: Set name for custom keybinding
+#   community.general.dconf:
+#     key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom{{ custom_key_number }}/name
+#     value: 'Abrir Nautilus'
+#   register: result_set_name
+#   vars:
+#     custom_key_number: 0
+
+# - name: Set keybinding for custom keybinding
+#   community.general.dconf:
+#     key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom{{ custom_key_number }}/binding
+#     value: '<Super>e'
+#   register: result_set_keybinding
+#   vars:
+#     custom_key_number: 0
+
+# - name: Set command for custom keybinding
+#   community.general.dconf:
+#     key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom{{ custom_key_number }}/command
+#     value: 'nautilus'
+#   register: result_set_command
+#   vars:
+#     custom_key_number: 0
+
+# - name: Set path for custom keybinding
+#   community.general.dconf:
+#     key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom{{ custom_key_number }}/action
+#     value: "'/usr/bin/nautilus'"
+#   register: result_set_path
+#   vars:
+#     custom_key_number: 0
+
+# - name: Update custom keybindings list
+#   community.general.dconf:
+#     key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
+#     value: "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom{{ custom_key_number }}/']"
+#   register: result_update_custom_keybindings
+#   vars:
+#     custom_key_number: 0
+
+####################################################
+
+- name: Nautilus shortcut name
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name"
+    value: "'nautilus'"
+    state: present
+- name: Nautilus shortcut command
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command"
+    value: "'nautilus'"
+- name: Nautilus shortcut binding
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding"
+    value: "'<Super>e'"
