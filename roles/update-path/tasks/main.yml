@@ -1,0 +1,8 @@
+- name: "Adicionando caminho (se não existir) à variável PATH no ~/.zshrc: {{ new_path }}"
+  ansible.builtin.lineinfile:
+    backup: yes
+    path: ~/.zshrc
+    regexp: '^(export PATH="\$PATH(?:(?!.*:{{ new_path }}(?::|")).*))(")$'
+    line: '\1:{{ new_path }}\2'
+    backrefs: yes
+  register: path_line

@@ -2,15 +2,23 @@
 #### Setup do PATH
 ###########################################################################
 
-# // TODO: Fiz essa pergunta ao chatgpt e parece que a resposta dele foi boa:
-# "Crie pra mim uma role que vai receber um path e vai atualizar a
-# variável PATH definida no ~/.zshrc. Não deve permitir itens duplicados."
-# Com a role é possível fazer reuso e assim poder adicionar algo no PATH
-# a partir de qualquer task
+- name: Prepara o arquivo ~/.zshrc para conter uma linha que comece com 'export PATH='
+  block:
+    - name: Verificar se a linha já existe
+      ansible.builtin.shell: "grep '^export PATH=' ~/.zshrc || true"
+      register: path_line
+      changed_when: false
+
+    - name: Adicionar linha 'export PATH="$PATH"' se não existir
+      ansible.builtin.lineinfile:
+        backup: yes
+        path: ~/.zshrc
+        insertafter: EOF
+        line: 'export PATH="$PATH"'
+      when: path_line.stdout == ""
+
 - name: Adicionar diretório ~/.local/bin à variável PATH
-  ansible.builtin.lineinfile:
-    backup: yes
-    path: ~/.zshrc
-    line: 'export PATH="$PATH:{{ ansible_user_dir }}/.local/bin"'
-    state: present
-    regexp: '^export PATH='
+  ansible.builtin.include_role:
+    name: update-path
+  vars:
+    new_path: '{{ ansible_user_dir }}/.local/bin'
