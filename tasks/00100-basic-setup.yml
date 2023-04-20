@@ -16,9 +16,10 @@
     name:
       - fd-find
       - fzf
+      - google-chrome-stable
       - python3-ansible-lint
+      - python3-virtualenv
       - ripgrep
       - the_silver_searcher
-      - google-chrome-stable
-      - python3-virtualenv
+      - vim-enhanced
     state: present
