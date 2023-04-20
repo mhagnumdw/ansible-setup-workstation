@@ -17,6 +17,8 @@
     name:
       - nautilus-dropbox
     state: present
+    # // TODO: descomentar, pois talvez evite um erro na primeira execução
+    # update_cache: yes
   become: true
 
 - name: Iniciar Dropbox

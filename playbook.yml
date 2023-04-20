@@ -15,14 +15,14 @@
     - name: Executar tasks
       ansible.builtin.include_tasks: "{{ item }}"
       loop:
-        # - tasks/00100-basic-setup.yml
-        # - tasks/00200-install-zsh.yml
-        # - tasks/00225-path.yml
-        # - tasks/00250-install-oh-my-zsh.yml
-        # - tasks/00275-install-zsh-powerlevel10k.yml
-        # - tasks/00285-install-oh-my-zsh-plugins.yml
-        # - tasks/00300-install-asdf.yml
-        # - tasks/00400-add-vpn-sefin.yml
+        - tasks/00100-basic-setup.yml
+        - tasks/00200-install-zsh.yml
+        - tasks/00225-path.yml
+        - tasks/00250-install-oh-my-zsh.yml
+        - tasks/00275-install-zsh-powerlevel10k.yml
+        - tasks/00285-install-oh-my-zsh-plugins.yml
+        - tasks/00300-install-asdf.yml
+        - tasks/00400-add-vpn-sefin.yml
         - tasks/00500-install-dropbox-v2.yml
 
     # # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_vars_facts.html
