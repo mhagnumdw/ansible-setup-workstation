@@ -1,8 +1,23 @@
 # TODO
 
+- <https://docs.ansible.com/ansible/latest/collections/index_module.html>
 - <https://fedoramagazine.org/using-ansible-setup-workstation>
 - <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/pause_module.html#ansible-collections-ansible-builtin-pause-module>
 - <https://github.com/zdharma-continuum/fast-syntax-highlighting>
 - <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/copyfile>
 - <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/copypath>
 - <https://github.com/unixorn/awesome-zsh-plugins>
+- <https://github.com/jonmosco/kube-ps1>
+- <https://github.com/unixorn/git-extra-commands>
+- <https://github.com/bigH/git-fuzzy>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/bgnotify>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/catimg>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/command-not-found>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/docker>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/docker-compose>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/gitignore>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/jsontools>
+- <https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/transfer>
+- <https://docs.ansible.com/ansible/latest/collections/community/general/gconftool2_module.html#ansible-collections-community-general-gconftool2-module>
+- <https://docs.ansible.com/ansible/latest/collections/community/general/dconf_module.html#ansible-collections-community-general-dconf-module>
+- <https://github.com/zdharma-continuum/fast-syntax-highlighting>
