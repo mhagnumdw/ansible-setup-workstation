@@ -21,3 +21,5 @@
 - <https://docs.ansible.com/ansible/latest/collections/community/general/gconftool2_module.html#ansible-collections-community-general-gconftool2-module>
 - <https://docs.ansible.com/ansible/latest/collections/community/general/dconf_module.html#ansible-collections-community-general-dconf-module>
 - <https://github.com/zdharma-continuum/fast-syntax-highlighting>
+- <https://github.com/PeterMosmans/ansible-role-customize-gnome>
+- <https://gist.github.com/carlwgeorge/c560a532b6929f49d9c0df52f75a68ae>
